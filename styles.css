@@ -56,3 +56,6 @@
 
 /* Pin gare: rosso per le gare geolocalizzate */
 .custom-pin span{background:#d94b4b}.custom-pin span:after{background:#fff}.custom-pin.missing-distance span{background:#d94b4b}.custom-pin.missing-distance span:after{background:#fff}
+
+/* Tutti i pin, comprese le gare senza distanza, sono rossi */
+.custom-pin.missing-distance span{background:#d94b4b!important}.custom-pin.missing-distance span:after{background:#fff!important}
