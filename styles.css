@@ -44,3 +44,5 @@
 .stat-card .distance{font-size:14px}.stat-card .distance span{font-size:11px}
 
 .delete-btn svg{width:15px;height:15px;stroke-width:1.45}.delete-btn{color:#8f968e;opacity:.82}.delete-btn:hover{color:#c75b5b;opacity:1;background:transparent;transform:scale(1.08)}
+
+.stat-card small{font-size:13px}
