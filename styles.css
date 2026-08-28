@@ -14,3 +14,5 @@
 
 /* Pulsante archivio coerente con il CTA principale */
 .archive-actions .secondary{background:var(--ink);border-color:var(--ink);color:#fff;padding:12px 16px;border-radius:8px;font:700 11px 'DM Sans';box-shadow:var(--shadow);transition:background .15s,transform .15s}.archive-actions .secondary:first-letter{color:var(--lime);font-size:16px}.archive-actions .secondary:hover{background:var(--lime-dark);border-color:var(--lime-dark);color:var(--ink);transform:translateY(-1px)}
+
+.stat-card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.stat-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}.stat-card.featured:hover{box-shadow:0 12px 24px #769d241f}
