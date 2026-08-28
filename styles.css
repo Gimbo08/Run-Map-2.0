@@ -3,3 +3,5 @@
 .custom-pin{background:transparent;border:0}.custom-pin span{display:block;width:18px;height:18px;background:var(--lime-dark);border:3px solid #fff;border-radius:50%;box-shadow:0 2px 7px #1c321966}.custom-pin span:after{content:'';position:absolute;width:5px;height:5px;background:#fff;border-radius:50%;top:4px;left:4px}
 
 .race-row .race-time{padding-right:14px}
+
+#importBtn.loading{cursor:wait;opacity:.82}#importBtn:disabled{cursor:wait}.spinner{display:inline-block;width:13px;height:13px;border:2px solid #ffffff55;border-top-color:var(--lime);border-radius:50%;margin-right:8px;vertical-align:-2px;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
