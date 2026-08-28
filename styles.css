@@ -59,3 +59,5 @@
 
 /* Tutti i pin, comprese le gare senza distanza, sono rossi */
 .custom-pin.missing-distance span{background:#d94b4b!important}.custom-pin.missing-distance span:after{background:#fff!important}
+
+.race-time{display:flex;flex-direction:column;gap:3px}.race-time strong{font:600 15px/1.15 'Space Grotesk';color:var(--lime-dark)}.race-time span{font:400 11px/1.2 'DM Sans';color:var(--muted);white-space:nowrap}
