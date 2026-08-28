@@ -38,3 +38,5 @@
 
 /* Personal Best: maggiore leggibilità di unità e dettaglio gara */
 .stat-card .distance span{font-size:10px}.stat-card small{font-size:11px}
+
+.stat-card small{font-size:14px;line-height:1.3}
