@@ -30,3 +30,5 @@
 .delete-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.delete-btn{color:#a4aaa2;transition:color .15s,background .15s}.delete-btn:hover{color:#d35858;background:#d3585812}
 
 .races-section{max-width:none;width:100%}
+
+.photo-item{position:relative;width:64px;height:64px}.photo-item img{width:64px;height:64px;object-fit:cover;border-radius:6px}.remove-photo{position:absolute;right:-5px;top:-5px;width:19px;height:19px;border:2px solid var(--surface);border-radius:50%;background:#d35858;color:#fff;font:bold 13px/14px Arial;cursor:pointer;padding:0}.remove-photo:hover{background:#b53e3e}
