@@ -9,3 +9,5 @@
 .pb-heading{margin-bottom:14px}
 
 .race-distance:has(+ .race-time){padding-left:4px}.race-distance{color:var(--ink)}.custom-pin.missing-distance span{background:#3187e8}.custom-pin.missing-distance span:after{background:#dcecff}
+
+.archive-actions{display:flex;align-items:center;gap:14px}.secondary{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;padding:9px 12px;font:600 11px 'DM Sans';cursor:pointer}.secondary:hover{border-color:var(--lime-dark);background:var(--lime)}@media(max-width:700px){.archive-actions{align-items:flex-end;flex-direction:column;gap:8px}}
