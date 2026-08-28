@@ -7,3 +7,5 @@
 #importBtn.loading{cursor:wait;opacity:.82}#importBtn:disabled{cursor:wait}.spinner{display:inline-block;width:13px;height:13px;border:2px solid #ffffff55;border-top-color:var(--lime);border-radius:50%;margin-right:8px;vertical-align:-2px;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 
 .pb-heading{margin-bottom:14px}
+
+.race-distance:has(+ .race-time){padding-left:4px}.race-distance{color:var(--ink)}.custom-pin.missing-distance span{background:#3187e8}.custom-pin.missing-distance span:after{background:#dcecff}
