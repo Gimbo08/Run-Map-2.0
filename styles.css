@@ -46,3 +46,6 @@
 .delete-btn svg{width:15px;height:15px;stroke-width:1.45}.delete-btn{color:#8f968e;opacity:.82}.delete-btn:hover{color:#c75b5b;opacity:1;background:transparent;transform:scale(1.08)}
 
 .stat-card small{font-size:13px}
+
+/* Celle Personal Best uniformi: il testo lungo va a capo */
+.stats-grid{grid-auto-rows:155px}.stat-card{height:155px;min-height:0;display:flex;flex-direction:column;align-items:flex-start}.stat-card small{width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.25;margin-top:auto;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}@media(max-width:700px){.stats-grid{grid-auto-rows:165px}.stat-card{height:165px}}
