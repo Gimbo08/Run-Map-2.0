@@ -24,3 +24,5 @@
 
 /* Righe gare più ariose e testo più leggibile */
 .race-row{min-height:84px;padding-top:20px;padding-bottom:20px}.race-date{font-size:14px}.race-date span{font-size:13px}.race-name{font-size:16px}.race-city,.race-distance{font-size:14px}.race-time{font-size:15px}@media(max-width:700px){.race-row{min-height:74px;padding-top:17px;padding-bottom:17px}.race-name{font-size:15px}.race-date{font-size:13px}.race-date span{font-size:12px}}
+
+.archive-actions{flex-direction:row}.archive-actions .secondary{order:2}.archive-actions .sort-control{order:1}@media(max-width:700px){.archive-actions{flex-direction:column;align-items:flex-end}}
