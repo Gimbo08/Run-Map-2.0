@@ -53,3 +53,6 @@
 .race-name{display:flex;align-items:center;gap:8px}.photo-indicator{display:inline-flex;flex:0 0 auto;color:var(--lime-dark);width:17px;height:17px}.photo-indicator svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}.featured .photo-indicator{color:var(--ink)}
 
 .stat-card.featured{background:var(--surface);border-color:var(--line)}.stat-card.featured small{color:var(--muted)}.stat-card.featured:hover{box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}
+
+/* Pin gare: rosso per le gare geolocalizzate */
+.custom-pin span{background:#d94b4b}.custom-pin span:after{background:#fff}.custom-pin.missing-distance span{background:#d94b4b}.custom-pin.missing-distance span:after{background:#fff}
