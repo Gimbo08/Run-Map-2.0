@@ -35,3 +35,6 @@
 
 /* Menu modifica gara: testo leggermente più leggibile */
 .modal{font-size:13px}.modal label{font-size:12px}.modal input,.modal textarea{font-size:14px}.modal .photo-help,.modal .field-status{font-size:10px}.modal .primary{font-size:13px}
+
+/* Personal Best: maggiore leggibilità di unità e dettaglio gara */
+.stat-card .distance span{font-size:10px}.stat-card small{font-size:11px}
