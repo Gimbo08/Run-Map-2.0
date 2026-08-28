@@ -11,3 +11,6 @@
 .race-distance:has(+ .race-time){padding-left:4px}.race-distance{color:var(--ink)}.custom-pin.missing-distance span{background:#3187e8}.custom-pin.missing-distance span:after{background:#dcecff}
 
 .archive-actions{display:flex;align-items:center;gap:14px}.secondary{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;padding:9px 12px;font:600 11px 'DM Sans';cursor:pointer}.secondary:hover{border-color:var(--lime-dark);background:var(--lime)}@media(max-width:700px){.archive-actions{align-items:flex-end;flex-direction:column;gap:8px}}
+
+/* Pulsante archivio coerente con il CTA principale */
+.archive-actions .secondary{background:var(--ink);border-color:var(--ink);color:#fff;padding:12px 16px;border-radius:8px;font:700 11px 'DM Sans';box-shadow:var(--shadow);transition:background .15s,transform .15s}.archive-actions .secondary:first-letter{color:var(--lime);font-size:16px}.archive-actions .secondary:hover{background:var(--lime-dark);border-color:var(--lime-dark);color:var(--ink);transform:translateY(-1px)}
