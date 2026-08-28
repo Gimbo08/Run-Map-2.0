@@ -1,0 +1,12 @@
+const http=require('http');
+const fs=require('fs');
+const path=require('path');
+const https=require('https');
+const {URL}=require('url');
+const PORT=process.env.PORT||4173;
+const ATHLETE_ID='375285';
+const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'});res.end(JSON.stringify(data))};
+function fetchPage(url){return new Promise((resolve,reject)=>https.get(url,{headers:{'User-Agent':'RunMap/1.0'}},r=>{let body='';r.setEncoding('utf8');r.on('data',x=>body+=x);r.on('end',()=>resolve(body));r.on('error',reject)}).on('error',reject))}
+function clean(html){return html.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim()}
+async function importRaces(req,res){if(!req.headers.authorization?.startsWith('Bearer '))return send(res,401,{error:'Login richiesto'});try{const html=await fetchPage(`https://www.irunning.it/atleta.php?id=${ATHLETE_ID}`);const text=clean(html);const races=[];const pattern=/\b(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\b/g;let match,id=Date.now();while((match=pattern.exec(text))&&races.length<100){const date=`${match[3]}-${match[2].padStart(2,'0')}-${match[1].padStart(2,'0')}`;const context=text.slice(Math.max(0,match.index-160),match.index+260);const time=context.match(/\b(?:\d{1,2}:)?\d{1,2}:\d{2}\b/);races.push({id:id++,date,name:'Gara importata da iRunning',city:'Da verificare',distance:10,time:time?.[0]||'00:00:00',lat:44.65,lon:11.1,notes:'Importata da iRunning: verifica nome, città e distanza.',photos:[]})}send(res,200,{athleteId:ATHLETE_ID,races})}catch(e){send(res,502,{error:'Impossibile recuperare iRunning'})}}
+http.createServer((req,res)=>{const parsed=new URL(req.url,`http://${req.headers.host||'localhost'}`);if(parsed.pathname===`/api/import/${ATHLETE_ID}`&&req.method==='GET')return importRaces(req,res);const file=path.join(__dirname,parsed.pathname==='/'?'index.html':parsed.pathname.slice(1));const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8'};res.setHeader('Content-Type',types[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).on('error',()=>{res.statusCode=404;res.end('Not found')}).pipe(res)}).listen(PORT,()=>console.log(`Run Map server on ${PORT}`));
