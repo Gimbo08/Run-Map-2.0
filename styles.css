@@ -94,3 +94,9 @@
 /* Layout macro-menu sotto l'hero, due colonne */
 .page-shell{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px;row-gap:14px}.page-shell>.hero,.page-shell>.races-section{grid-column:1/-1;width:100%}.page-shell>.macro-section{width:100%;margin:0}.page-shell>.macro-section .macro-button{min-height:66px}.page-shell>.macro-section .macro-content{width:100%}@media(max-width:700px){.page-shell{display:block}.page-shell>.macro-section{margin-bottom:12px}.page-shell>.hero,.page-shell>.races-section{width:100%}}
 
+
+/* Macro-menu sempre visibili e ordinati */
+.page-shell>.macro-section{display:block;visibility:visible;opacity:1;align-self:start}.page-shell>.macro-section .macro-button{display:flex;visibility:visible;min-height:66px}.page-shell>.macro-section .macro-content{display:none}.page-shell>.macro-section .macro-content.expanded{display:block}.page-shell>.races-section{grid-column:1/-1}
+/* Contrasto del CTA in modalita scura */
+body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #394638}body.dark .hero .primary span{color:#b8e94d}body.dark .hero .primary:hover{background:#1b271c;border-color:#b8e94d}
+@media(max-width:700px){.page-shell{display:block}.page-shell>.macro-section{display:block;width:100%;margin-bottom:12px}.page-shell>.macro-section .macro-button{width:100%}}
