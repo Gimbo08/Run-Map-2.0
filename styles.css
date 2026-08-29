@@ -106,3 +106,5 @@ body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #3946
 @media(max-width:700px){.page-shell>.macro-section:has(.macro-content.expanded){width:100%}}
 
 .brand-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.brand-mark svg circle{fill:#fff;stroke:none}
+
+.planned-status{display:flex!important;flex-direction:column;align-items:flex-start;gap:5px;line-height:1.15}.planned-status span{display:block}
