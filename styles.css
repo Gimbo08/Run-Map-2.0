@@ -100,3 +100,7 @@
 /* Contrasto del CTA in modalita scura */
 body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #394638}body.dark .hero .primary span{color:#b8e94d}body.dark .hero .primary:hover{background:#1b271c;border-color:#b8e94d}
 @media(max-width:700px){.page-shell{display:block}.page-shell>.macro-section{display:block;width:100%;margin-bottom:12px}.page-shell>.macro-section .macro-button{width:100%}}
+
+/* Macro aperto a tutta larghezza, indipendente dalla colonna del pulsante */
+.page-shell>.macro-section:has(.macro-content.expanded){grid-column:1/-1}.page-shell>.macro-section:has(.macro-content.expanded) .macro-content{width:100%;max-width:none}.page-shell>.macro-section:has(.macro-content.expanded) .macro-button{width:100%}
+@media(max-width:700px){.page-shell>.macro-section:has(.macro-content.expanded){width:100%}}
