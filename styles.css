@@ -79,3 +79,5 @@
 }
 
 .race-warning{display:inline-flex;flex:0 0 auto;width:17px;height:17px;color:#d94b4b;cursor:help}.race-warning svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.race-warning:hover{color:#b82f2f}.race-name .race-warning+.photo-indicator{margin-left:-2px}
+
+.pin-group{background:transparent;border:0}.pin-group span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#d94b4b;border:3px solid #fff;color:#fff;box-shadow:0 2px 8px #19302144;font:700 11px 'Space Grotesk';cursor:pointer}.pin-group span:hover{background:#b82f2f;transform:scale(1.08)}
