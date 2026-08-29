@@ -132,3 +132,5 @@ body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #3946
   .races-section .archive-actions .sort-control select,.races-section .archive-actions .secondary{height:38px}
   .races-section>.race-list{grid-column:1/-1;grid-row:3;width:100%}
 }
+
+@media(max-width:700px){.races-section .archive-actions .secondary{order:1}.races-section .archive-actions .sort-control{order:2}}
