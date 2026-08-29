@@ -10,12 +10,12 @@ const seedRaces=[
 {id:9,date:'2024-06-02',name:'Strapanaro',city:'Modena',distance:5,time:'00:20:12',lat:44.648,lon:10.926},
 {id:10,date:'2024-04-21',name:'Bologna Marathon',city:'Bologna',distance:42.195,time:'03:52:08',lat:44.494,lon:11.342},
 {id:11,date:'2023-10-08',name:'Reggio Emilia Run',city:'Reggio Emilia',distance:10,time:'00:49:15',lat:44.698,lon:10.631}];
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { getFirestore, collection, getDocs, getDoc, setDoc, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 import { firebaseConfig } from './firebase-config.js';
-const firebaseApp=initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp),storage=getStorage(firebaseApp);let currentUser=null;let athleteId='';let races=[];let map,markers=[];
+const firebaseApp=getApps().length?getApp():initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp),storage=getStorage(firebaseApp);let currentUser=null;let athleteId='';let races=[];let map,markers=[];
 const $=id=>document.getElementById(id);
 function initMacroSections(){document.querySelectorAll('.macro-button').forEach(button=>button.addEventListener('click',()=>{const content=document.getElementById(button.getAttribute('aria-controls'));const open=button.getAttribute('aria-expanded')==='true';button.setAttribute('aria-expanded',String(!open));content.classList.toggle('expanded',!open)}))}
 async function saveRace(r){if(!currentUser)throw new Error('Utente non autenticato');await setDoc(doc(db,'users',currentUser.uid,'races',String(r.id)),r)}
