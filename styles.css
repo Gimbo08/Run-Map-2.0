@@ -118,3 +118,17 @@ body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #3946
 /* Barra archivio: tutti i controlli sulla stessa riga desktop */
 @media(min-width:701px){.races-section{position:relative;padding-top:52px}.races-section .races-heading{position:absolute;top:0;left:0;right:0;margin:0;height:40px;display:flex;align-items:center}.races-section .races-heading>div:first-child{flex:1}.races-section .races-heading h2{font-size:24px}.races-section .archive-actions{position:static!important;height:38px;display:flex;align-items:center;gap:14px;flex:0 0 auto}.races-section .race-filters{position:absolute;top:0;left:280px;right:465px;height:38px;display:flex;flex-wrap:nowrap;align-items:center;gap:8px;margin:0}.races-section .race-filters select,.races-section .race-filters .filter-reset{height:38px;min-width:0;flex:1;padding:0 10px}.races-section .race-filters .filter-reset{flex:0 0 auto}.races-section .archive-actions .sort-control{height:38px;white-space:nowrap}.races-section .archive-actions .secondary{white-space:nowrap}}
 @media(max-width:700px){.races-section{padding-top:0}.races-section .race-filters{position:static}}
+
+/* Desktop archivio: titolo su riga propria, controlli nella riga successiva */
+@media(min-width:701px){
+  .races-section{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:18px;row-gap:14px;padding-top:0!important}
+  .races-section .races-heading{display:contents!important;position:static!important}
+  .races-section .races-heading>div:first-child{grid-column:1/-1;grid-row:1;display:flex;align-items:center;min-height:38px}
+  .races-section .races-heading>div:first-child h2{margin:0}
+  .races-section .race-filters{grid-column:1;grid-row:2;position:static!important;right:auto!important;left:auto!important;top:auto!important;height:38px;width:100%;display:flex;flex-wrap:nowrap;align-items:center;gap:8px;margin:0;min-width:0}
+  .races-section .race-filters select{flex:1 1 0;min-width:0}
+  .races-section .archive-actions{grid-column:2;grid-row:2;position:static!important;display:flex;align-items:center;height:38px;gap:14px;white-space:nowrap}
+  .races-section .archive-actions .sort-control{height:38px;display:flex;align-items:center;gap:9px}
+  .races-section .archive-actions .sort-control select,.races-section .archive-actions .secondary{height:38px}
+  .races-section>.race-list{grid-column:1/-1;grid-row:3;width:100%}
+}
