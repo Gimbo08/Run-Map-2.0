@@ -143,3 +143,6 @@ body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #3946
 
 /* Toggle tema coerente e leggibile in entrambi i temi */
 .theme-toggle{height:34px;padding:4px 6px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);gap:6px}.theme-toggle>span:first-child,.theme-toggle>span:last-child{font-size:14px;line-height:1}.theme-toggle .toggle-track{width:36px;height:20px;background:var(--ink);border-radius:20px;padding:2px}.theme-toggle .toggle-track b{width:16px;height:16px;background:var(--lime);display:block;border-radius:50%}.theme-toggle:hover{border-color:var(--lime-dark)}body.dark .theme-toggle{background:#1b201b;border-color:#465247;color:#f1f4ed}body.dark .theme-toggle .toggle-track{background:#b8e94d}body.dark .theme-toggle .toggle-track b{background:#182018;transform:translateX(16px)}
+
+/* Aggiungi gara: contrasto corretto in tema scuro */
+body.dark .archive-actions .secondary{background:#b8e94d;border-color:#b8e94d;color:#182018}body.dark .archive-actions .secondary:first-letter{color:#182018}body.dark .archive-actions .secondary:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
