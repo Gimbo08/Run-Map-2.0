@@ -150,3 +150,6 @@ body.dark .archive-actions .secondary{background:#b8e94d;border-color:#b8e94d;co
 /* CTA Sync coerente con Aggiungi gara */
 .hero .primary{background:var(--lime);border:1px solid var(--lime);color:#182018}.hero .primary span{color:#182018}.hero .primary:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
 body.dark .hero .primary{background:var(--lime);border-color:var(--lime);color:#182018}body.dark .hero .primary span{color:#182018}body.dark .hero .primary:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
+
+/* Sync: nero nel tema chiaro, lime nel tema scuro */
+body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);color:#fff}body:not(.dark) .hero .primary span{color:var(--lime)}body:not(.dark) .hero .primary:hover{background:#303630;border-color:#303630;color:#fff}body.dark .hero .primary{background:var(--lime);border-color:var(--lime);color:#182018}body.dark .hero .primary span{color:#182018}body.dark .hero .primary:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
