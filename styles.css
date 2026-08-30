@@ -146,3 +146,7 @@ body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #3946
 
 /* Aggiungi gara: contrasto corretto in tema scuro */
 body.dark .archive-actions .secondary{background:#b8e94d;border-color:#b8e94d;color:#182018}body.dark .archive-actions .secondary:first-letter{color:#182018}body.dark .archive-actions .secondary:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
+
+/* CTA Sync coerente con Aggiungi gara */
+.hero .primary{background:var(--lime);border:1px solid var(--lime);color:#182018}.hero .primary span{color:#182018}.hero .primary:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
+body.dark .hero .primary{background:var(--lime);border-color:var(--lime);color:#182018}body.dark .hero .primary span{color:#182018}body.dark .hero .primary:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
