@@ -140,3 +140,6 @@ body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #3946
 @media(min-width:701px){.race-row{grid-template-columns:96px minmax(180px,1fr) 125px 100px 78px 105px 112px 34px}.race-type{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.race-place{font:600 11px/1.3 'Space Grotesk';color:var(--lime-dark);white-space:nowrap}}
 
 .sync-status-hidden{display:none!important}
+
+/* Toggle tema coerente e leggibile in entrambi i temi */
+.theme-toggle{height:34px;padding:4px 6px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);gap:6px}.theme-toggle>span:first-child,.theme-toggle>span:last-child{font-size:14px;line-height:1}.theme-toggle .toggle-track{width:36px;height:20px;background:var(--ink);border-radius:20px;padding:2px}.theme-toggle .toggle-track b{width:16px;height:16px;background:var(--lime);display:block;border-radius:50%}.theme-toggle:hover{border-color:var(--lime-dark)}body.dark .theme-toggle{background:#1b201b;border-color:#465247;color:#f1f4ed}body.dark .theme-toggle .toggle-track{background:#b8e94d}body.dark .theme-toggle .toggle-track b{background:#182018;transform:translateX(16px)}
