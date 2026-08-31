@@ -28,3 +28,6 @@ async function connectStrava(){try{const token=await user.getIdToken();const res
  onAuthStateChanged(auth,u=>{user=u;if(u){ensurePanels();load();const params=new URLSearchParams(location.search);if(params.get('strava')==='connected')alert(`${params.get('imported')||0} attività Strava importate`);if(params.has('strava'))history.replaceState({},'',location.pathname)}});
 
 ensurePanels();
+
+const shoesRetryTimer=setInterval(()=>{const cards=byId('shoeCards');if(user&&cards&&cards.textContent.includes('Caricamento'))load();},5000);
+setTimeout(()=>{const cards=byId('shoeCards'),list=byId('workoutList');if(cards&&cards.textContent.includes('Caricamento'))cards.innerHTML='<p class="intro">Caricamento non riuscito. Controlla la connessione e ricarica la pagina.</p>';if(list&&list.textContent.includes('Caricamento'))list.innerHTML='<p class="intro">Caricamento non riuscito. Controlla la connessione e ricarica la pagina.</p>';},15000);
