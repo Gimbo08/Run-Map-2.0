@@ -178,3 +178,5 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 .shoe-color-field{margin:0 0 14px;padding:0;border:0}.shoe-color-field legend{margin-bottom:8px;color:var(--muted);font-size:11px}.shoe-color-picker{display:flex;flex-wrap:wrap;gap:9px}.shoe-color-option{position:relative;margin:0!important;cursor:pointer}.shoe-color-option input{position:absolute;opacity:0;pointer-events:none}.shoe-color-option i{display:block;width:26px;height:26px;border:2px solid transparent;border-radius:50%;box-shadow:0 0 0 1px var(--line)}.shoe-color-option input:checked+i{outline:2px solid var(--ink);outline-offset:3px}.shoe-color-label{display:flex;align-items:center;gap:7px}.shoe-color-label i{display:inline-block;width:9px;height:9px;border:1px solid var(--line);border-radius:50%}
 
 .shoe-entry{cursor:pointer}.shoe-entry:focus-within,.shoe-entry:hover{border-color:var(--lime-dark)}
+
+.shoe-usage-low{color:#138a43}.shoe-usage-medium{color:#b67800}.shoe-usage-high{color:#cf3b3b}.shoe-progress.shoe-usage-low i{background:#138a43}.shoe-progress.shoe-usage-medium i{background:#e0a400}.shoe-progress.shoe-usage-high i{background:#df4545}
