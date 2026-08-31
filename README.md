@@ -25,6 +25,13 @@ firebase deploy --only functions,firestore:rules,storage
 
 Per un progetto già attivo, assicurati che il piano Firebase consenta l'uso delle Cloud Functions e che l'API di geocoding sia utilizzata rispettando i limiti di Nominatim.
 
+### Collegamento Strava tramite OAuth
+L'importazione degli allenamenti usa OAuth 2.0: il client secret Strava resta esclusivamente nelle Cloud Functions. Crea un'app su [Strava API Settings](https://www.strava.com/settings/api) e imposta come **Authorization Callback Domain** il dominio `europe-west1-run-map-2.cloudfunctions.net` (oppure il dominio del tuo progetto). Configura quindi le variabili delle Functions:
+
+Copia `functions/.env.example` in `functions/.env` e completa il valore `STRAVA_CLIENT_SECRET` con il secret dell'app Strava. Il file `.env` è escluso da Git e viene caricato dalle Cloud Functions durante il deploy. La callback Strava deve coincidere esattamente con quella registrata nell'app Strava.
+
+Dopo averle configurate, pubblica nuovamente le funzioni. Il pulsante **Collega Strava** apre il consenso Strava e, al ritorno, importa automaticamente le attività `Run`, `VirtualRun` e `TrailRun` nel profilo Firebase dell'utente.
+
 Imposta nel frontend l'URL del backend con:
 
 ```html
