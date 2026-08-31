@@ -180,3 +180,5 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 .shoe-entry{cursor:pointer}.shoe-entry:focus-within,.shoe-entry:hover{border-color:var(--lime-dark)}
 
 .shoe-usage-low{color:#138a43}.shoe-usage-medium{color:#b67800}.shoe-usage-high{color:#cf3b3b}.shoe-progress.shoe-usage-low i{background:#138a43}.shoe-progress.shoe-usage-medium i{background:#e0a400}.shoe-progress.shoe-usage-high i{background:#df4545}
+
+.modal select{display:block;width:100%;margin-top:6px;padding:11px 38px 11px 11px;border:1px solid var(--line);border-radius:6px;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%237d827c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;background-size:12px;color:var(--ink);font:inherit;appearance:none;cursor:pointer}.modal select:focus{outline:2px solid var(--lime-dark);outline-offset:1px}
