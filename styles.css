@@ -215,3 +215,6 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 
 /* Archivio gare: più spazio al nome e cestino vicino al tempo */
 @media(min-width:701px){.dashboard-content .race-row{grid-template-columns:88px minmax(280px,1fr) 105px 92px 62px 88px 110px 28px;column-gap:10px}.dashboard-content .race-time{padding-left:4px}.dashboard-content .delete-btn{justify-self:end}}
+
+/* Mobile: intestazione e menu pagine sempre disponibili */
+@media(max-width:700px){.topbar{position:sticky;top:0;z-index:1500;background:var(--surface);box-shadow:0 2px 10px #19302112}.dashboard-nav{position:sticky;top:68px;z-index:1400;background:#192219;box-shadow:0 2px 10px #19302118}.dashboard-content{position:relative;z-index:1}}
