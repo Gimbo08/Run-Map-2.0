@@ -241,3 +241,7 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 /* Giorno settimana gare future identico all'archivio gare */
 .future-date{font:600 14px/1.2 'Space Grotesk';color:var(--ink)}.future-date small{font:400 13px/1.35 'DM Sans';color:var(--muted);margin-top:5px;text-transform:capitalize}
 @media(max-width:700px){.future-date{font-size:11px}.future-date small{font-size:10px;margin-top:4px}}
+
+/* Giorni settimana: identici tra gare future e archivio */
+.future-date small{font:400 13px/1.35 'DM Sans'!important;color:var(--muted)!important;margin-top:5px!important;text-transform:capitalize}
+@media(max-width:700px){.future-date small{font:400 10px/1.2 'DM Sans'!important;margin-top:4px!important}}
