@@ -267,3 +267,6 @@ body.dark #addFuture{background:var(--lime);border-color:var(--lime);color:#1820
 
 /* Tema scuro: simbolo Sync leggibile sullo sfondo lime */
 body.dark #importBtn span{color:#182018}
+
+/* Pulsanti aggiunta gara: stessa tipografia nelle due sezioni */
+#addRaceBtn,#addFuture{font:600 11px 'DM Sans'!important;letter-spacing:0}
