@@ -270,3 +270,7 @@ body.dark #importBtn span{color:#182018}
 
 /* Pulsanti aggiunta gara: stessa tipografia nelle due sezioni */
 #addRaceBtn,#addFuture{font:600 11px 'DM Sans'!important;letter-spacing:0}
+
+/* Sidebar desktop fissa sotto la topbar, senza spazio del logo rimosso */
+.dashboard-nav p{margin:12px 10px 12px}.dashboard-nav{top:68px;height:calc(100vh - 68px)}
+@media(max-width:700px){.dashboard-nav{top:68px;height:auto}.dashboard-nav p{margin:0}}
