@@ -303,3 +303,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Rollover celle scarpe coerente con Personal Best */
 .shoe-entry{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.shoe-entry:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}
+
+/* Gare future: contorno a cella coerente con Gare effettuate */
+.future-list{gap:7px}.future-row,.future-row:first-child{background:var(--surface);border:1px solid var(--line);border-radius:7px}.future-row:hover{border-color:var(--lime-dark);transform:translateY(-1px)}
