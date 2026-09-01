@@ -245,3 +245,6 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 /* Giorni settimana: identici tra gare future e archivio */
 .future-date small{font:400 13px/1.35 'DM Sans'!important;color:var(--muted)!important;margin-top:5px!important;text-transform:capitalize}
 @media(max-width:700px){.future-date small{font:400 10px/1.2 'DM Sans'!important;margin-top:4px!important}}
+
+/* Giorni della settimana desktop: 13px per entrambe le sezioni */
+@media(min-width:701px){.race-date span,.future-date small{font-size:13px!important}}
