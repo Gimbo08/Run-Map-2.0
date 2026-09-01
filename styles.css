@@ -200,3 +200,5 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 .dashboard-content>.macro-section{scroll-margin-top:24px}@media(max-width:700px){.dashboard-content>.macro-section{scroll-margin-top:16px}}
 
 .dashboard-goal{display:block;color:var(--ink);text-decoration:none}.dashboard-goal small{line-height:1.4}
+
+.workout-limit{margin:4px 0;color:var(--muted);font-size:12px;text-align:center}
