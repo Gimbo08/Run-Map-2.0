@@ -294,3 +294,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Prossimo obiettivo: card compatta su desktop */
 @media(min-width:701px){.dashboard-overview>.dashboard-goal{width:66.666%;max-width:760px}}
+
+/* Navigazione laterale: titoli pannelli visibili sotto le barre fisse */
+@media(min-width:701px){.dashboard-content>.macro-section{scroll-margin-top:92px}}@media(max-width:700px){.dashboard-content>.macro-section{scroll-margin-top:132px}}
