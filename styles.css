@@ -281,7 +281,7 @@ body.dark #importBtn span{color:#182018}
 /* Comandi nelle macro-celle: contrasto coerente per tema */
 .macro-content button:not(.delete-btn){background:#182018;border-color:#182018;color:#fff;transition:background .18s,border-color .18s,color .18s}.macro-content button:not(.delete-btn):hover,.macro-content button:not(.delete-btn):focus-visible{background:var(--lime);border-color:var(--lime);color:#182018}.macro-content button:not(.delete-btn):focus-visible{outline:2px solid var(--lime-dark);outline-offset:2px}body.dark .macro-content button:not(.delete-btn){background:#fff;border-color:#fff;color:#182018}body.dark .macro-content button:not(.delete-btn):hover,body.dark .macro-content button:not(.delete-btn):focus-visible{background:var(--lime);border-color:var(--lime);color:#182018}
 
-.planned-delete-all{margin-left:auto}@media(max-width:700px){.planned-delete-all{margin-left:0}}
+.planned-delete-all{margin-left:0}
 
 /* Tema chiaro: simbolo aggiunta gara bianco */
 body:not(.dark) #addRaceBtn:first-letter{color:#fff}
