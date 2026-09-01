@@ -198,3 +198,5 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 @media(max-width:700px){.dashboard-nav{scroll-snap-type:x mandatory}.dashboard-nav-link{scroll-snap-align:start}.dashboard-content>.macro-section .macro-button{font-size:16px;padding:15px}.dashboard-content>.macro-section .macro-content{padding:14px}.dashboard-content>.macro-section:has(#racesContent) .macro-content{padding:0}.dashboard-content>.macro-section:has(#mapContent) #map{height:220px}}
 
 .dashboard-content>.macro-section{scroll-margin-top:24px}@media(max-width:700px){.dashboard-content>.macro-section{scroll-margin-top:16px}}
+
+.dashboard-goal{display:block;color:var(--ink);text-decoration:none;cursor:pointer;transition:transform .15s,box-shadow .15s}.dashboard-goal:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.dashboard-goal small b{font-size:18px;margin-left:5px}
