@@ -212,3 +212,6 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 /* Archivio gare: colonne separate per evitare sovrapposizioni */
 @media(min-width:701px){.dashboard-content .race-row{grid-template-columns:96px minmax(190px,1fr) 120px 105px 75px 95px 115px 34px;column-gap:16px}.dashboard-content .race-distance,.dashboard-content .race-time{white-space:nowrap}.dashboard-content .race-distance{padding-left:8px}.dashboard-content .race-time{padding-left:8px}.dashboard-content .race-name,.dashboard-content .race-city,.dashboard-content .race-type{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 @media(max-width:700px){.dashboard-content .race-row{grid-template-columns:58px minmax(0,1fr) 30px;column-gap:10px}.dashboard-content .race-name{min-width:0}}
+
+/* Archivio gare: più spazio al nome e cestino vicino al tempo */
+@media(min-width:701px){.dashboard-content .race-row{grid-template-columns:88px minmax(280px,1fr) 105px 92px 62px 88px 110px 28px;column-gap:10px}.dashboard-content .race-time{padding-left:4px}.dashboard-content .delete-btn{justify-self:end}}
