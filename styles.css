@@ -205,3 +205,6 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 
 /* Dashboard: una macro-sezione per riga */
 @media(min-width:701px){.dashboard-content.page-shell{grid-template-columns:minmax(0,1fr)}.dashboard-content>.macro-section,.dashboard-content>.macro-section:has(#mapContent),.dashboard-content>.macro-section:has(#shoeShelfContent),.dashboard-content>.macro-section:has(#workoutsPlaceholderContent),.dashboard-content>.macro-section:has(#racesContent){grid-column:1/-1}}
+
+/* Hover coerente per le quattro card Panoramica */
+.dashboard-overview>article{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.dashboard-overview>article:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}.dashboard-overview>.dashboard-goal:hover{box-shadow:0 12px 24px #769d241f}
