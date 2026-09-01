@@ -264,3 +264,6 @@ body.dark #addFuture{background:var(--lime);border-color:var(--lime);color:#1820
 
 /* Desktop: topbar sempre visibile durante lo scroll */
 @media(min-width:701px){.topbar{position:sticky;top:0;z-index:1500;background:var(--surface);box-shadow:0 2px 10px #19302112}}
+
+/* Tema scuro: simbolo Sync leggibile sullo sfondo lime */
+body.dark #importBtn span{color:#182018}
