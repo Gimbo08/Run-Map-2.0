@@ -300,3 +300,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Rollover celle Statistiche generali coerente con Personal Best */
 .general-stats-grid article{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.general-stats-grid article:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}
+
+/* Rollover celle scarpe coerente con Personal Best */
+.shoe-entry{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.shoe-entry:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}
