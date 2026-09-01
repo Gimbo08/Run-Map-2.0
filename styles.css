@@ -254,3 +254,5 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 
 /* CTA in tema scuro: verde per aggiunta scarpa e sincronizzazione */
 body.dark #addShoeButton,body.dark #importBtn{background:var(--lime);border-color:var(--lime);color:#182018}body.dark #addShoeButton:hover,body.dark #importBtn:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
+
+body.dark #addWorkoutButton{background:var(--lime);border-color:var(--lime);color:#182018}body.dark #addWorkoutButton:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
