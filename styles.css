@@ -251,3 +251,6 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 
 /* Giorno della settimana: dimensione uniforme a 13px */
 .race-date span,.future-date small{font-size:13px!important;line-height:1.35!important}.future-date small{color:var(--muted)}
+
+/* CTA in tema scuro: verde per aggiunta scarpa e sincronizzazione */
+body.dark #addShoeButton,body.dark #importBtn{background:var(--lime);border-color:var(--lime);color:#182018}body.dark #addShoeButton:hover,body.dark #importBtn:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
