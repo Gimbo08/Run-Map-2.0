@@ -202,3 +202,6 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 .dashboard-goal{display:block;color:var(--ink);text-decoration:none}.dashboard-goal small{line-height:1.4}
 
 .workout-limit{margin:4px 0;color:var(--muted);font-size:12px;text-align:center}
+
+/* Dashboard: una macro-sezione per riga */
+@media(min-width:701px){.dashboard-content.page-shell{grid-template-columns:minmax(0,1fr)}.dashboard-content>.macro-section,.dashboard-content>.macro-section:has(#mapContent),.dashboard-content>.macro-section:has(#shoeShelfContent),.dashboard-content>.macro-section:has(#workoutsPlaceholderContent),.dashboard-content>.macro-section:has(#racesContent){grid-column:1/-1}}
