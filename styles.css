@@ -318,3 +318,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Gare future: altezza rollover coerente con le altre celle */
 .future-row:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a}
+
+/* Allenamenti effettuati: rollover coerente con Gare future */
+.workout-entry{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.workout-entry:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}
