@@ -292,8 +292,8 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 /* Panoramica ridotta al solo prossimo obiettivo */
 .dashboard-overview{grid-template-columns:minmax(0,1fr)}.dashboard-overview>.dashboard-goal{max-width:none}
 
-/* Prossimo obiettivo: card compatta su desktop */
-@media(min-width:701px){.dashboard-overview>.dashboard-goal{width:50%;max-width:560px}}
+/* Prossimo obiettivo: card dimensionata sul contenuto */
+.dashboard-overview>.dashboard-goal{width:fit-content;max-width:100%;justify-self:start}@media(min-width:701px){.dashboard-overview>.dashboard-goal{max-width:560px}}
 
 /* Navigazione laterale: titoli pannelli visibili sotto le barre fisse */
 @media(min-width:701px){.dashboard-content>.macro-section{scroll-margin-top:92px}}@media(max-width:700px){.dashboard-content>.macro-section{scroll-margin-top:132px}}
