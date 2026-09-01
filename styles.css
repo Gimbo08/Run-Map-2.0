@@ -199,4 +199,4 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 
 .dashboard-content>.macro-section{scroll-margin-top:24px}@media(max-width:700px){.dashboard-content>.macro-section{scroll-margin-top:16px}}
 
-.dashboard-goal{display:block;color:var(--ink);text-decoration:none;cursor:pointer;transition:transform .15s,box-shadow .15s}.dashboard-goal:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.dashboard-goal small b{font-size:18px;margin-left:5px}
+.dashboard-goal{display:block;color:var(--ink);text-decoration:none}.dashboard-goal small{line-height:1.4}
