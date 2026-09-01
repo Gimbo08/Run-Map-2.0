@@ -306,3 +306,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Gare future: contorno a cella coerente con Gare effettuate */
 .future-list{gap:7px}.future-row,.future-row:first-child{background:var(--surface);border:1px solid var(--line);border-radius:7px}.future-row:hover{border-color:var(--lime-dark);transform:translateY(-1px)}
+
+/* Allenamenti futuri: rollover coerente con Gare future */
+.planned-workout-row{transition:transform .15s,border-color .15s}.planned-workout-row:hover{border-color:var(--lime-dark);transform:translateY(-1px)}
