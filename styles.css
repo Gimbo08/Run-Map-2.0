@@ -288,3 +288,6 @@ body:not(.dark) #addRaceBtn:first-letter{color:#fff}
 
 /* Sync: rollover verde e simbolo bianco nel tema chiaro */
 body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}body:not(.dark) #importBtn span{color:#fff}body:not(.dark) #importBtn:hover,body:not(.dark) #importBtn:focus-visible{background:var(--lime);border-color:var(--lime);color:#182018}body:not(.dark) #importBtn:hover span,body:not(.dark) #importBtn:focus-visible span{color:#182018}
+
+/* Panoramica ridotta al solo prossimo obiettivo */
+.dashboard-overview{grid-template-columns:minmax(0,1fr)}.dashboard-overview>.dashboard-goal{max-width:none}
