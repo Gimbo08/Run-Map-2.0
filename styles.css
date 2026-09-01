@@ -258,3 +258,6 @@ body.dark #addShoeButton,body.dark #importBtn{background:var(--lime);border-colo
 body.dark #addWorkoutButton{background:var(--lime);border-color:var(--lime);color:#182018}body.dark #addWorkoutButton:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
 
 body.dark #addFuture{background:var(--lime);border-color:var(--lime);color:#182018}body.dark #addFuture:hover{background:#d2f77a;border-color:#d2f77a;color:#182018}
+
+/* Archivio gare: rientro destro del CTA coerente con Gare future */
+@media(min-width:701px){.dashboard-content .races-section .archive-actions{margin-right:16px}}
