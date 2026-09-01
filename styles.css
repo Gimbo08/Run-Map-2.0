@@ -324,3 +324,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Allenamenti futuri: celle arrotondate e rollover completo */
 .planned-workout-list{gap:7px}.planned-workout-row{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:15px 16px;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.planned-workout-row:hover{background:var(--surface);border-color:var(--lime-dark);transform:translateY(-4px);box-shadow:0 12px 24px #1930211a}@media(max-width:700px){.planned-workout-row{padding:13px 10px}}
+
+/* Filtri Gare effettuate allineati alle celle dell'elenco */
+.dashboard-content>.macro-section:has(#racesContent) .race-filters{margin-left:16px;margin-right:16px}@media(max-width:700px){.dashboard-content>.macro-section:has(#racesContent) .race-filters{margin-left:10px;margin-right:10px}}
