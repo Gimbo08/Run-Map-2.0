@@ -234,3 +234,6 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 
 /* Stato gare future: informazioni uniformi e neutre */
 .future-status,.future-status span,.future-status small,.future-status b{color:var(--muted);font:400 11px/1.45 'DM Sans';letter-spacing:0}.future-status b{font-weight:400}
+
+/* Data gare future: testo nero */
+.future-date,.future-date small{color:var(--ink)}
