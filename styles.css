@@ -291,3 +291,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Panoramica ridotta al solo prossimo obiettivo */
 .dashboard-overview{grid-template-columns:minmax(0,1fr)}.dashboard-overview>.dashboard-goal{max-width:none}
+
+/* Prossimo obiettivo: card compatta su desktop */
+@media(min-width:701px){.dashboard-overview>.dashboard-goal{width:66.666%;max-width:760px}}
