@@ -248,3 +248,6 @@ body:not(.dark) .hero .primary{background:var(--ink);border-color:var(--ink);col
 
 /* Giorni della settimana desktop: 13px per entrambe le sezioni */
 @media(min-width:701px){.race-date span,.future-date small{font-size:13px!important}}
+
+/* Giorno della settimana: dimensione uniforme a 13px */
+.race-date span,.future-date small{font-size:13px!important;line-height:1.35!important}.future-date small{color:var(--muted)}
