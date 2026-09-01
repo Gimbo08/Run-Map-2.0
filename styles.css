@@ -297,3 +297,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Navigazione laterale: titoli pannelli visibili sotto le barre fisse */
 @media(min-width:701px){.dashboard-content>.macro-section{scroll-margin-top:92px}}@media(max-width:700px){.dashboard-content>.macro-section{scroll-margin-top:132px}}
+
+/* Rollover celle Statistiche generali coerente con Personal Best */
+.general-stats-grid article{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.general-stats-grid article:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}
