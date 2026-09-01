@@ -309,3 +309,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Allenamenti futuri: rollover coerente con Gare future */
 .planned-workout-row{transition:transform .15s,border-color .15s}.planned-workout-row:hover{border-color:var(--lime-dark);transform:translateY(-1px)}
+
+/* Rollover dettagli Statistiche generali */
+.stats-details article{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.stats-details article:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a;border-color:var(--lime-dark)}
