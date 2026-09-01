@@ -315,3 +315,6 @@ body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}bo
 
 /* Gare effettuate: rientro interno delle celle come Gare future */
 .dashboard-content>.macro-section:has(#racesContent) .race-list{padding:0 16px 16px}@media(max-width:700px){.dashboard-content>.macro-section:has(#racesContent) .race-list{padding:0 10px 10px}}
+
+/* Gare future: altezza rollover coerente con le altre celle */
+.future-row:hover{transform:translateY(-4px);box-shadow:0 12px 24px #1930211a}
