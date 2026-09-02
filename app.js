@@ -1,15 +1,3 @@
-const seedRaces=[
-{id:1,date:'2025-10-12',name:'Maratona di Reggio Emilia',city:'Reggio Emilia',distance:42.195,time:'03:28:41',lat:44.698,lon:10.631},
-{id:2,date:'2025-09-28',name:'Mezza Maratona di Bologna',city:'Bologna',distance:21.097,time:'01:35:22',lat:44.494,lon:11.342},
-{id:3,date:'2025-09-07',name:'Corsa del Secchia',city:'Modena',distance:10,time:'00:42:18',lat:44.648,lon:10.926},
-{id:4,date:'2025-06-15',name:'Run 5.000 Parco Nord',city:'Milano',distance:5,time:'00:19:44',lat:45.523,lon:9.207},
-{id:5,date:'2025-05-25',name:'Ravenna Half Marathon',city:'Ravenna',distance:21.097,time:'01:38:09',lat:44.418,lon:12.204},
-{id:6,date:'2025-04-13',name:'Vivicittà Reggio Emilia',city:'Reggio Emilia',distance:10,time:'00:44:02',lat:44.7,lon:10.63},
-{id:7,date:'2024-11-03',name:'Maratona di Parma',city:'Parma',distance:42.195,time:'03:36:17',lat:44.801,lon:10.328},
-{id:8,date:'2024-09-22',name:'Corri Cesenatico',city:'Cesenatico',distance:10,time:'00:46:30',lat:44.2,lon:12.4},
-{id:9,date:'2024-06-02',name:'Strapanaro',city:'Modena',distance:5,time:'00:20:12',lat:44.648,lon:10.926},
-{id:10,date:'2024-04-21',name:'Bologna Marathon',city:'Bologna',distance:42.195,time:'03:52:08',lat:44.494,lon:11.342},
-{id:11,date:'2023-10-08',name:'Reggio Emilia Run',city:'Reggio Emilia',distance:10,time:'00:49:15',lat:44.698,lon:10.631}];
 import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { getFirestore, collection, getDocs, getDoc, setDoc, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
