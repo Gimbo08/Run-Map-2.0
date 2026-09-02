@@ -288,7 +288,7 @@ body.dark #importBtn span{color:#182018}
 .planned-delete-all{margin-left:0}
 
 /* Tema chiaro: simboli di aggiunta in lime */
-body:not(.dark) #addRaceBtn:first-letter,body:not(.dark) #addWorkoutButton:first-letter{color:var(--lime)}
+body:not(.dark) #addRaceBtn:first-letter,body:not(.dark) #addWorkoutButton:first-letter,body:not(.dark) #importPlannedDoc:first-letter,body:not(.dark) #addPlannedWorkout:first-letter{color:var(--lime)}
 
 /* Sync: rollover verde e simbolo bianco nel tema chiaro */
 body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}body:not(.dark) #importBtn span{color:#fff}body:not(.dark) #importBtn:hover,body:not(.dark) #importBtn:focus-visible{background:var(--lime);border-color:var(--lime);color:#182018}body:not(.dark) #importBtn:hover span,body:not(.dark) #importBtn:focus-visible span{color:#182018}
