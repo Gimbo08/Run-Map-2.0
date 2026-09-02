@@ -289,6 +289,10 @@ body:not(.dark) #addRaceBtn:first-letter{color:#fff}
 /* Sync: rollover verde e simbolo bianco nel tema chiaro */
 body:not(.dark) #importBtn{background:#182018;border-color:#182018;color:#fff}body:not(.dark) #importBtn span{color:#fff}body:not(.dark) #importBtn:hover,body:not(.dark) #importBtn:focus-visible{background:var(--lime);border-color:var(--lime);color:#182018}body:not(.dark) #importBtn:hover span,body:not(.dark) #importBtn:focus-visible span{color:#182018}
 
+/* Tema scuro: comandi principali delle sezioni in lime */
+body.dark #importPlannedDoc,body.dark #addPlannedWorkout,body.dark #deleteAllPlannedWorkouts,body.dark #addRaceBtn,body.dark #resetFilters{background:var(--lime);border-color:var(--lime);color:#182018}
+body.dark #importPlannedDoc:hover,body.dark #importPlannedDoc:focus-visible,body.dark #addPlannedWorkout:hover,body.dark #addPlannedWorkout:focus-visible,body.dark #deleteAllPlannedWorkouts:hover,body.dark #deleteAllPlannedWorkouts:focus-visible,body.dark #addRaceBtn:hover,body.dark #addRaceBtn:focus-visible,body.dark #resetFilters:hover,body.dark #resetFilters:focus-visible{background:var(--lime);border-color:var(--lime);color:#182018}
+
 /* Panoramica ridotta al solo prossimo obiettivo */
 .dashboard-overview{grid-template-columns:minmax(0,1fr)}.dashboard-overview>.dashboard-goal{max-width:none}
 
