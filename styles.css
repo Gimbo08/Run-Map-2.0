@@ -342,8 +342,8 @@ body.dark .macro-content #importPlannedDoc:hover,body.dark .macro-content #impor
 /* Gare future: scelta Sì/No testuale */
 .future-flag-choice,.future-flag-choice.active{height:auto;padding:0;border:0;border-radius:0;background:transparent;font:600 11px/1.3 'DM Sans';box-shadow:none}.future-flag-choice{color:#c3c9c1}.future-flag-choice.active{color:var(--lime-dark)}.future-flag-choice:hover{border:0;color:var(--lime-dark)}
 
-/* Gare future: stati centrati nella cella */
-.future-row>.future-status{align-self:stretch;height:100%;justify-content:center;align-items:stretch}.future-row>.future-status>.future-flag{align-self:center;width:100%}.future-row>.delete-btn{align-self:center}
+/* Gare future: contenuti centrati verticalmente nella cella */
+.future-row{align-items:center}.future-row>.future-date,.future-row>.future-name,.future-row>.future-distance,.future-row>.future-status,.future-row>.delete-btn{align-self:center}.future-row>.future-status{height:auto;justify-content:center;align-items:stretch}.future-row>.future-status>.future-flag{align-self:center;width:100%}.future-row>.delete-btn{justify-self:end}
 @media(max-width:700px){.future-row>.future-status{align-self:center;height:auto;justify-content:center;align-content:center}.future-row>.future-status>.future-flag{align-self:center}.future-row>.future-date,.future-row>.future-name,.future-row>.future-distance,.future-row>.future-status,.future-row>.delete-btn{align-self:center;position:relative;top:8px}.future-row>.delete-btn{grid-row:1 / 4}}
 
 /* Gare future: toggle Sì/No solo testuali, anche dentro le macro */
