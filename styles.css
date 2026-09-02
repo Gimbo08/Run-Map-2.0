@@ -347,3 +347,6 @@ body.dark .macro-content #importPlannedDoc:hover,body.dark .macro-content #impor
 
 /* Gare future mobile: due controlli per riga */
 @media(max-width:700px){.modal-backdrop,.workout-editor-backdrop,.shoe-editor-backdrop{z-index:2000}.future-status{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto;flex-direction:initial;align-items:center}.future-status .future-flag{display:grid!important;grid-template-columns:minmax(0,1fr) 22px 22px;align-items:center;gap:3px;min-width:0}.future-status .future-flag:nth-child(1){grid-column:1;grid-row:1}.future-status .future-flag:nth-child(2){grid-column:2;grid-row:1}.future-status .future-flag:nth-child(3){grid-column:1;grid-row:2}.future-status>b{grid-column:2;grid-row:2;align-self:center;white-space:nowrap}}
+
+/* Tema scuro: il nome del prossimo evento resta leggibile sullo sfondo lime */
+body.dark .dashboard-goal #goalRaceName{color:#182018}
