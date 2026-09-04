@@ -1,11 +1,11 @@
 {
   "name": "run-map-functions",
   "private": true,
-  "engines": { "node": "20" },
+  "engines": { "node": "22" },
   "main": "index.js",
   "dependencies": {
     "firebase-admin": "^12.1.1",
-    "firebase-functions": "^5.0.1",
+    "firebase-functions": "^7.3.2",
     "cheerio": "^1.0.0"
   }
 }
