@@ -12,7 +12,9 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      "functions/**"
+      "functions/**",
+      "qa-mobile-theme.mjs",
+      "mobile-theme.png"
     ],
     "cleanUrls": true
   }
