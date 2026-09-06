@@ -5,5 +5,15 @@
     "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*", "*.local"]
   }],
   "firestore": { "rules": "firestore.rules" },
-  "storage": { "rules": "storage.rules" }
+  "storage": { "rules": "storage.rules" },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "functions/**"
+    ],
+    "cleanUrls": true
+  }
 }
