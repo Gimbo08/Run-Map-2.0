@@ -4,3 +4,23 @@ functions/node_modules/
 firebase-debug.log
 .env
 *.local
+
+# Backup e artefatti locali
+backup-*.zip
+BACKUP*.zip
+*.bak
+
+# QA / mockup / analisi una tantum
+mockups/
+apk-analysis/
+qa-*.mjs
+runmap-proposals.mjs
+.qa-*.png
+appjs-diff.txt
+build-log.txt
+
+# File personali / binari non di progetto
+*.docx
+1.png
+5.jpeg
+mobile-theme.png

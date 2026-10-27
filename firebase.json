@@ -16,6 +16,20 @@
       "qa-mobile-theme.mjs",
       "mobile-theme.png"
     ],
-    "cleanUrls": true
+    "cleanUrls": false,
+    "headers": [
+      {
+        "source": "**/*.@(js|css|svg|png|jpg|jpeg|gif|webp|ico|json)",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      }
+    ]
   }
 }

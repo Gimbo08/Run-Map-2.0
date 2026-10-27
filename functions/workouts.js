@@ -1,13 +1,91 @@
 const crypto=require('crypto');
 const {onRequest}=require('firebase-functions/v2/https');
 const admin=require('firebase-admin');
-const STRAVA_AUTHORIZE='https://www.strava.com/oauth/authorize';
-const STRAVA_TOKEN='https://www.strava.com/oauth/token';
-const STRAVA_ACTIVITIES='https://www.strava.com/api/v3/athlete/activities';
-const appUrl=()=>process.env.RUNMAP_APP_URL||'https://gimbo08.github.io/Run-Map-2.0/';
-const stateToken=uid=>{const payload=Buffer.from(JSON.stringify({uid,createdAt:Date.now()})).toString('base64url');const signature=crypto.createHmac('sha256',process.env.STRAVA_CLIENT_SECRET||'').update(payload).digest('base64url');return `${payload}.${signature}`};
-const readState=state=>{const [payload,signature]=String(state||'').split('.');if(!payload||!signature)return null;const expected=crypto.createHmac('sha256',process.env.STRAVA_CLIENT_SECRET||'').update(payload).digest('base64url');if(!crypto.timingSafeEqual(Buffer.from(signature),Buffer.from(expected)))return null;const value=JSON.parse(Buffer.from(payload,'base64url').toString());return value.uid&&Date.now()-value.createdAt<600000?value:null};
+const INTERVALS_API='https://intervals.icu/api/v1';const INTERVALS_HISTORY_DAYS=90;const INTERVALS_MAX_ACTIVITIES=10;
+const appUrl=()=>process.env.RUNMAP_APP_URL||'https://run-map-2.web.app/';
 const userFromRequest=async req=>{const token=String(req.headers.authorization||'').replace(/^Bearer\s+/,'');if(!token)return null;try{return await admin.auth().verifyIdToken(token)}catch{return null}};
 const activityType=value=>({Run:'run',VirtualRun:'run',Walk:'walk',Hike:'hike',TrailRun:'hike'}[value]||null);
-exports.stravaStart=onRequest({cors:true,region:'europe-west1',invoker:'public'},async(req,res)=>{const user=await userFromRequest(req);if(!user)return res.status(401).json({error:'Login richiesto'});if(!process.env.STRAVA_CLIENT_ID||!process.env.STRAVA_CLIENT_SECRET||!process.env.STRAVA_REDIRECT_URI)return res.status(503).json({error:'Importazione Strava non configurata'});const query=new URLSearchParams({client_id:process.env.STRAVA_CLIENT_ID,response_type:'code',redirect_uri:process.env.STRAVA_REDIRECT_URI,approval_prompt:'auto',scope:'read,activity:read',state:stateToken(user.uid)});res.json({authorizationUrl:`${STRAVA_AUTHORIZE}?${query}`})});
-exports.stravaCallback=onRequest({cors:true,region:'europe-west1',timeoutSeconds:90,invoker:'public'},async(req,res)=>{try{const state=readState(req.query.state);if(!state)return res.redirect(`${appUrl()}?strava=error`);if(req.query.error)return res.redirect(`${appUrl()}?strava=cancelled`);const tokenResponse=await fetch(STRAVA_TOKEN,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({client_id:process.env.STRAVA_CLIENT_ID,client_secret:process.env.STRAVA_CLIENT_SECRET,code:req.query.code,grant_type:'authorization_code'})});if(!tokenResponse.ok)throw new Error(`Strava token ${tokenResponse.status}`);const token=await tokenResponse.json();const existingSnapshot=await admin.firestore().collection(`users/${state.uid}/runActivities`).get();const existingByStravaId=new Map(existingSnapshot.docs.map(item=>[String(item.data().stravaId||''),item]));const existingByDocumentId=new Map(existingSnapshot.docs.map(item=>[item.id,item]));const existingByDateKm=new Map(existingSnapshot.docs.map(item=>{const data=item.data();return [`${data.date}|${Number(data.km||0).toFixed(3)}`,item]}));let page=1,imported=0;while(page<=10){const response=await fetch(`${STRAVA_ACTIVITIES}?per_page=200&page=${page}`,{headers:{Authorization:`Bearer ${token.access_token}`}});if(!response.ok)throw new Error(`Strava activities ${response.status}`);const activities=await response.json();if(!activities.length)break;const batch=admin.firestore().batch();activities.forEach(activity=>{const type=activityType(activity.type);if(!type)return;const stravaId=String(activity.id),id=`strava-${stravaId}`,date=String(activity.start_date_local||activity.start_date).slice(0,10),km=Number(activity.distance||0)/1000,existing=existingByStravaId.get(stravaId)||existingByDocumentId.get(id)||existingByDateKm.get(`${date}|${km.toFixed(3)}`);batch.set(existing?.ref||admin.firestore().doc(`users/${state.uid}/runActivities/${id}`),{id:existing?.id||id,type,date,km,source:'strava',stravaId,updatedAt:Date.now()},{merge:true});imported++});await batch.commit();if(activities.length<200)break;page++}res.redirect(`${appUrl()}?strava=connected&imported=${imported}`)}catch(error){console.error('Strava activities import failed',error);res.redirect(`${appUrl()}?strava=error`)}});
+
+
+// ---- Intervals.icu ----
+// Intervals.icu riceve le attivita' da Suunto (e da altre piattaforme) e le espone via API
+// con una chiave personale: niente abbonamento e nessuna approvazione, a differenza di Strava.
+// L'utente salva la sua API key e l'athlete id in users/{uid}/integrations/intervals.
+const intervalsHeaders = apiKey => ({ Authorization: 'Basic ' + Buffer.from('API_KEY:' + apiKey).toString('base64') });
+const intervalsUserFromRequest = async req => userFromRequest(req);
+
+exports.intervalsConnect = onRequest({ cors: true, region: 'europe-west1', invoker: 'public' }, async (req, res) => {
+  const user = await intervalsUserFromRequest(req);
+  if (!user) return res.status(401).json({ error: 'Login richiesto' });
+  const apiKey = String((req.body && req.body.apiKey) || '').trim();
+  const athleteId = String((req.body && req.body.athleteId) || '').trim();
+  if (!apiKey || !athleteId) return res.status(400).json({ error: 'API key e athlete id sono obbligatori' });
+  try {
+    // Verifico subito le credenziali: se non funzionano, non le salvo.
+    const check = await fetch(`${INTERVALS_API}/athlete/${encodeURIComponent(athleteId)}`, { headers: intervalsHeaders(apiKey) });
+    if (!check.ok) return res.status(400).json({ error: 'Credenziali Intervals.icu non valide (' + check.status + ')' });
+    const athlete = await check.json();
+    await admin.firestore().doc(`users/${user.uid}/integrations/intervals`).set({ apiKey, athleteId, athleteName: athlete.name || null, updatedAt: Date.now() }, { merge: true });
+    res.json({ connected: true, athleteId, athleteName: athlete.name || null });
+  } catch (error) {
+    console.error('Intervals connect failed', error);
+    res.status(502).json({ error: 'Collegamento Intervals.icu non riuscito' });
+  }
+});
+
+exports.intervalsDisconnect = onRequest({ cors: true, region: 'europe-west1', invoker: 'public' }, async (req, res) => {
+  const user = await intervalsUserFromRequest(req);
+  if (!user) return res.status(401).json({ error: 'Login richiesto' });
+  try {
+    await admin.firestore().doc(`users/${user.uid}/integrations/intervals`).delete();
+    res.json({ connected: false });
+  } catch (error) {
+    console.error('Intervals disconnect failed', error);
+    res.status(502).json({ error: 'Scollegamento Intervals.icu non riuscito' });
+  }
+});
+
+exports.intervalsImport = onRequest({ cors: true, region: 'europe-west1', timeoutSeconds: 20, invoker: 'public' }, async (req, res) => {
+  const user = await intervalsUserFromRequest(req);
+  if (!user) return res.status(401).json({ error: 'Login richiesto' });
+  try {
+    const ref = admin.firestore().doc(`users/${user.uid}/integrations/intervals`);
+    const snap = await ref.get();
+    if (!snap.exists) return res.status(404).json({ connected: false, error: 'Collega prima Intervals.icu' });
+    const integration = snap.data();
+    const apiKey = integration.apiKey, athleteId = integration.athleteId;
+    if (!apiKey || !athleteId) return res.status(404).json({ connected: false, error: 'Collega prima Intervals.icu' });
+
+    const existingSnapshot = await admin.firestore().collection(`users/${user.uid}/runActivities`).get();
+    const byIntervalsId = new Map(existingSnapshot.docs.map(item => [String(item.data().intervalsId || ''), item]));
+    const byDoc = new Map(existingSnapshot.docs.map(item => [item.id, item]));
+    const byDateKm = new Map(existingSnapshot.docs.map(item => { const d = item.data(); return [`${d.date}|${Number(d.km || 0).toFixed(3)}`, item]; }));
+
+    const newest = new Date().toISOString().slice(0, 10);
+    const oldest = new Date(Date.now() - INTERVALS_HISTORY_DAYS * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const response = await fetch(`${INTERVALS_API}/athlete/${encodeURIComponent(athleteId)}/activities?oldest=${oldest}&newest=${newest}`, { headers: intervalsHeaders(apiKey) });
+    if (response.status === 401 || response.status === 403) return res.status(401).json({ connected: false, error: 'Credenziali Intervals.icu non valide' });
+    if (!response.ok) throw new Error(`Intervals activities ${response.status}`);
+    const activities = await response.json();
+
+    let imported = 0;
+    const batch = admin.firestore().batch();
+    const recent = (activities || []).slice().sort((a, b) => String(b.start_date_local || b.start_date || '').localeCompare(String(a.start_date_local || a.start_date || ''))).slice(0, INTERVALS_MAX_ACTIVITIES);(recent || []).forEach(activity => {
+      const type = activityType(activity.type);
+      if (!type) return;
+      const intervalsId = String(activity.id);
+      const id = `intervals-${intervalsId}`;
+      const date = String(activity.start_date_local || activity.start_date || '').slice(0, 10);
+      if (!date) return;
+      const km = Number(activity.distance || 0) / 1000;
+      const existing = byIntervalsId.get(intervalsId) || byDoc.get(id) || byDateKm.get(`${date}|${km.toFixed(3)}`);
+      batch.set(existing ? existing.ref : admin.firestore().doc(`users/${user.uid}/runActivities/${id}`), { id: existing ? existing.id : id, type, date, km, source: 'intervals', intervalsId, updatedAt: Date.now() }, { merge: true });
+      imported++;
+    });
+    await batch.commit();
+    res.json({ connected: true, imported });
+  } catch (error) {
+    console.error('Intervals import failed', error);
+    res.status(502).json({ error: 'Importazione Intervals.icu non riuscita' });
+  }
+});

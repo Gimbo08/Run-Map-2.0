@@ -109,7 +109,7 @@ body.dark .hero .primary{background:#0b100d;color:#f1f4ed;border:1px solid #3946
 .page-shell>.macro-section:has(.macro-content.expanded){grid-column:1/-1}.page-shell>.macro-section:has(.macro-content.expanded) .macro-content{width:100%;max-width:none}.page-shell>.macro-section:has(.macro-content.expanded) .macro-button{width:100%}
 @media(max-width:700px){.page-shell>.macro-section:has(.macro-content.expanded){width:100%}}
 
-.brand-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.brand-mark svg circle{fill:#fff;stroke:none}
+.brand-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.brand-mark svg circle{fill:#fff;stroke:none}.brand-mark img{width:18px;height:18px;object-fit:contain;display:block}
 
 .planned-status{display:flex!important;flex-direction:column;align-items:flex-start;gap:5px;line-height:1.15}.planned-status span{display:block}
 
@@ -354,5 +354,190 @@ body.dark .macro-content #importPlannedDoc:hover,body.dark .macro-content #impor
 /* Gare future mobile: due controlli per riga */
 @media(max-width:700px){.modal-backdrop,.workout-editor-backdrop,.shoe-editor-backdrop{z-index:2000}.future-status{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto;flex-direction:initial;align-items:center}.future-status .future-flag{display:grid!important;grid-template-columns:minmax(0,1fr) 22px 22px;align-items:center;gap:3px;min-width:0}.future-status .future-flag:nth-child(1){grid-column:1;grid-row:1}.future-status .future-flag:nth-child(2){grid-column:2;grid-row:1}.future-status .future-flag:nth-child(3){grid-column:1;grid-row:2}.future-status>b{grid-column:2;grid-row:2;align-self:center;white-space:nowrap}}
 
+/* Gare future mobile: altezza dinamica in base al contenuto */
+@media(max-width:700px){
+  .future-row{grid-template-columns:72px minmax(0,1fr) auto 30px;grid-template-rows:auto auto;column-gap:12px;row-gap:10px;min-height:0!important;height:auto!important;align-content:start}
+  .future-distance{grid-column:3;grid-row:1;align-self:start;font:600 13px/1.25 'DM Sans'!important;letter-spacing:.05px;color:var(--ink);padding-top:0;margin:0!important}
+  .future-status{grid-column:1/4;grid-row:2;align-self:start!important;position:static!important;top:auto!important;margin:0!important;padding-top:8px!important}
+  .future-date small{margin-top:4px!important}
+  .future-row>.future-date,.future-row>.future-name,.future-row>.future-distance{align-self:start!important;position:static!important;top:auto!important}
+  .future-row>.delete-btn{grid-column:4;grid-row:1 / 3;align-self:center!important;position:static!important;top:auto!important}
+}
+
+/* Gare future: data come il nome gara e luogo come il giorno della settimana */
+.future-date span{font:600 16px/1.3 'DM Sans'!important;letter-spacing:.05px;color:var(--ink);display:block}
+.future-name strong{font:600 16px/1.3 'DM Sans'!important;letter-spacing:.05px}
+.future-name small{font:400 13px/1.35 'DM Sans'!important;color:var(--muted);margin-top:4px}
+@media(max-width:700px){
+  .future-date span{font:600 13px/1.25 'DM Sans'!important;letter-spacing:.05px;margin:0;line-height:1.25!important}
+  .future-name strong{font:600 13px/1.25 'DM Sans'!important;letter-spacing:.05px;line-height:1.25!important}
+  .future-distance{font:600 13px/1.25 'DM Sans'!important;letter-spacing:.05px;line-height:1.25!important;padding-top:0!important;margin:0!important}
+  .future-name small{font:400 10px/1.2 'DM Sans'!important;margin-top:3px}
+  .future-date small{font:400 10px/1.2 'DM Sans'!important;line-height:1.2!important}
+  .future-row>.future-date,.future-row>.future-name,.future-row>.future-distance{align-self:start!important;position:static!important;top:auto!important}
+  .future-row>.future-status{position:static!important;top:auto!important}
+}
+
 /* Tema scuro: il nome del prossimo evento resta leggibile sullo sfondo lime */
 body.dark .dashboard-goal #goalRaceName{color:#182018}
+
+/* Statistiche km percorsi per mese */
+.monthly-distance-summary{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:10px 0 14px}.monthly-distance-summary strong{font:600 clamp(25px,3vw,36px)/1 'DM Sans';color:var(--lime-dark)}.monthly-distance-summary span{font:500 12px 'DM Sans';color:var(--muted);text-transform:capitalize;text-align:right}.monthly-distance-slider{width:100%;accent-color:var(--lime-dark);cursor:pointer}.monthly-distance-months{margin-top:8px;font:500 11px 'DM Sans';color:var(--muted)}.monthly-distance-card small{display:block;margin-top:13px;color:var(--muted);line-height:1.4}@media(max-width:700px){.monthly-distance-summary{align-items:flex-start;flex-direction:column;gap:5px}.monthly-distance-summary span{text-align:left}}
+
+/* Navigazione mese km percorsi */
+.monthly-distance-summary{display:flex;align-items:center;justify-content:space-between;gap:10px}.monthly-distance-summary>div{text-align:center;min-width:0}.monthly-distance-arrow{width:32px;height:32px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font:400 26px/26px Arial;cursor:pointer}.monthly-distance-arrow:hover:not(:disabled),.monthly-distance-arrow:focus-visible:not(:disabled){background:var(--lime);border-color:var(--lime-dark);color:#182018}.monthly-distance-arrow:disabled{opacity:.3;cursor:not-allowed}.monthly-distance-summary strong{display:block}.monthly-distance-summary span{display:block}.monthly-distance-slider{display:none}
+
+/* Km percorsi: contenuto centrato verticalmente nella cella */
+.monthly-distance-card{display:flex;flex-direction:column;justify-content:center;min-height:180px}.monthly-distance-card h3{margin-top:0}.monthly-distance-months{margin-top:12px}
+
+/* Km percorsi coerente con le celle delle statistiche generali */
+.monthly-distance-summary strong{font:600 24px 'Space Grotesk';color:var(--ink);line-height:1;}
+@media(max-width:700px){.monthly-distance-summary strong{font-size:21px}}
+
+/* Frecce cambio mese più sottili */
+.monthly-distance-arrow{width:24px;height:24px;border-width:1px;font-size:20px;line-height:20px;font-weight:300}
+
+/* Mese e anno centrati nella scheda km percorsi */
+.monthly-distance-summary>div{flex:1;text-align:center}.monthly-distance-summary span{text-align:center}
+
+/* Frecce mese in stile chevron, senza pulsante circolare */
+.monthly-distance-arrow{width:20px;height:28px;border:0;border-radius:0;background:transparent;color:var(--muted);font:300 30px/26px 'Space Grotesk',sans-serif;transition:color .18s,transform .18s}.monthly-distance-arrow:hover:not(:disabled),.monthly-distance-arrow:focus-visible:not(:disabled){background:transparent;border:0;color:var(--lime-dark);transform:scale(1.12)}.monthly-distance-arrow:disabled{background:transparent;border:0}
+
+/* Mobile: navigazione mese verticale */
+@media(max-width:700px){.monthly-distance-summary{gap:6px}.monthly-distance-arrow{font-size:0;width:28px;height:24px}.monthly-distance-arrow::before{font:300 24px/22px 'Space Grotesk',sans-serif}.monthly-distance-arrow:first-child::before{content:'↑'}.monthly-distance-arrow:last-child::before{content:'↓'}}
+
+/* Titolo della scheda allineato come le altre statistiche */
+.monthly-distance-card{justify-content:flex-start}.monthly-distance-card h3{align-self:flex-start;text-align:left}
+
+/* Frecce mese: solo simbolo, senza sfondo né contorno */
+.monthly-distance-arrow,.monthly-distance-arrow:hover:not(:disabled),.monthly-distance-arrow:focus-visible:not(:disabled),.monthly-distance-arrow:disabled{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0;color:var(--muted);outline:0}.monthly-distance-arrow:hover:not(:disabled),.monthly-distance-arrow:focus-visible:not(:disabled){color:var(--lime-dark);transform:scale(1.12)}
+
+/* Mobile: frecce verticali nere, senza sfondo */
+@media(max-width:700px){.monthly-distance-arrow,.monthly-distance-arrow:hover:not(:disabled),.monthly-distance-arrow:focus-visible:not(:disabled),.monthly-distance-arrow:disabled{background:transparent!important;border:0!important;color:#000!important;box-shadow:none!important}.monthly-distance-arrow::before{color:#000!important}}
+
+/* Desktop: frecce lime su sfondo bianco */
+@media(min-width:701px){.monthly-distance-arrow,.monthly-distance-arrow:hover:not(:disabled),.monthly-distance-arrow:focus-visible:not(:disabled),.monthly-distance-arrow:disabled{background:transparent!important;border:0!important;color:var(--lime-dark)!important;box-shadow:none!important}.monthly-distance-arrow::before{color:var(--lime-dark)!important}}
+
+/* Mobile: titolo km percorsi per mese in alto a sinistra */
+@media(max-width:700px){.monthly-distance-card{justify-content:flex-start!important;align-items:stretch}.monthly-distance-card h3{align-self:flex-start!important;text-align:left!important;margin:0 0 12px!important}}
+
+/* Gare per distanza: altezza dinamica e scroll verticale lime */
+.stats-details article:has(#byDistance){align-self:start;height:fit-content;max-height:220px;overflow:hidden}.stats-details article:has(#byDistance) #byDistance{max-height:160px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--lime-dark) transparent}.stats-details article:has(#byDistance) #byDistance::-webkit-scrollbar{width:5px}.stats-details article:has(#byDistance) #byDistance::-webkit-scrollbar-track{background:transparent}.stats-details article:has(#byDistance) #byDistance::-webkit-scrollbar-thumb{background:var(--lime-dark);border-radius:5px}
+
+/* Statistiche generali: stessa tipografia dei titoli delle celle di dettaglio */
+.general-stats-grid span{display:block;font:600 13px 'Space Grotesk';letter-spacing:0;color:var(--ink);text-transform:none}.general-stats-grid strong{font:600 13px 'Space Grotesk';margin-top:12px;color:var(--ink)}
+@media(max-width:700px){.general-stats-grid span{font-size:12px}.general-stats-grid strong{font-size:13px}}
+
+/* Gare per distanza: stessa altezza della cella mensile, con elenco scorrevole */
+.stats-details article:has(#byDistance){height:180px;max-height:180px;min-height:180px;overflow:hidden}.stats-details article:has(#byDistance) #byDistance{height:132px;max-height:132px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--lime-dark) transparent}.stats-details article:has(#byDistance) #byDistance::-webkit-scrollbar{width:5px}.stats-details article:has(#byDistance) #byDistance::-webkit-scrollbar-track{background:transparent}.stats-details article:has(#byDistance) #byDistance::-webkit-scrollbar-thumb{background:var(--lime-dark);border-radius:5px}
+
+/* Gare per distanza: altezza ridotta a due terzi */
+.stats-details article:has(#byDistance){height:120px;max-height:120px;min-height:120px}.stats-details article:has(#byDistance) #byDistance{height:72px;max-height:72px}
+
+/* Celle statistiche dettagli: altezza uniforme a Gare per distanza */
+.stats-details>article{height:120px;min-height:120px;max-height:120px}.stats-details>.monthly-distance-card{height:120px;min-height:120px;max-height:120px}.stats-details>article:not(:has(#byDistance)){overflow:hidden}
+
+/* Valori statistiche generali coerenti con il valore Km percorsi per mese */
+.general-stats-grid strong{font:600 24px 'Space Grotesk';color:var(--ink);line-height:1;margin-top:12px}
+@media(max-width:700px){.general-stats-grid strong{font-size:21px}}
+
+/* Mobile: stessa navigazione orizzontale del desktop */
+@media(max-width:700px){.monthly-distance-arrow,.monthly-distance-arrow:hover:not(:disabled),.monthly-distance-arrow:focus-visible:not(:disabled),.monthly-distance-arrow:disabled{width:20px;height:28px;font-size:30px;line-height:26px;color:var(--lime-dark)!important;background:transparent!important;border:0!important;border-radius:0;box-shadow:none}.monthly-distance-arrow::before{content:none!important}}
+
+/* Mobile: frecce ai lati del valore km, non sopra e sotto */
+@media(max-width:700px){.monthly-distance-summary{flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:10px!important}.monthly-distance-summary>div{flex:1;text-align:center}.monthly-distance-summary span{text-align:center!important}}
+
+/* Mobile definitivo: frecce orizzontali ai lati del valore */
+@media(max-width:700px){.monthly-distance-summary{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important}.monthly-distance-summary>div{flex:1!important;text-align:center!important}.monthly-distance-arrow{display:block!important;width:20px!important;height:28px!important;padding:0!important;font-size:30px!important;line-height:26px!important;color:var(--lime-dark)!important}.monthly-distance-arrow::before{content:none!important;display:none!important}}
+
+/* ===== Coach AI ===== */
+.coach-panel{display:block}
+.coach-checkin{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:20px;margin-bottom:14px}
+.coach-eyebrow{font-size:10px;letter-spacing:2px;color:var(--lime-dark);font-weight:700;margin:0 0 8px}
+.coach-question{font:600 21px 'Space Grotesk';letter-spacing:-.5px;margin:0 0 6px}
+.coach-hint{font-size:12px;color:var(--muted);line-height:1.55;margin:0 0 14px}
+#coachCheckinText{display:block;width:100%;padding:12px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:13px 'DM Sans';line-height:1.5;resize:vertical}
+#coachCheckinText:focus{outline:none;border-color:var(--lime-dark)}
+.coach-checkin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.coach-checkin-actions .primary{box-shadow:none}
+.coach-checkin-actions button:disabled{opacity:.6;cursor:default}
+.coach-status{font-size:12px;margin:12px 0 0;padding:9px 12px;border-radius:6px;background:var(--bg);color:var(--muted)}
+.coach-status.ok{background:#e8f6d6;color:#3f5a12}
+.coach-status.info{background:var(--bg);color:var(--ink)}
+.coach-status.warn{background:#fdf0d2;color:#7a5410}
+.coach-status.error{background:#fbe0e0;color:#8a2020}
+body.dark .coach-status.ok{background:#26361a;color:#c7f25a}
+body.dark .coach-status.warn{background:#3a2f16;color:#f0c56a}
+body.dark .coach-status.error{background:#3d1f1f;color:#f09a9a}
+.coach-proposal{display:block}
+.coach-empty{font-size:13px;color:var(--muted);line-height:1.55;background:var(--surface);border:1px dashed var(--line);border-radius:9px;padding:18px;margin:0}
+.coach-readiness{display:flex;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:18px;margin-bottom:12px}
+.coach-readiness p{font-size:13px;line-height:1.5;margin:4px 0 0}
+.coach-score{flex:0 0 auto;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;text-align:center;border:3px solid var(--line);background:var(--bg)}
+.coach-score strong{display:block;font:600 26px 'Space Grotesk';line-height:1}
+.coach-score small{font-size:10px;color:var(--muted)}
+.coach-score.tone-verde{border-color:#6dca63}
+.coach-score.tone-giallo{border-color:#e3b341}
+.coach-score.tone-rosso{border-color:#d35858}
+.coach-block{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:18px;margin-bottom:12px}
+.coach-block h3{font:600 15px 'Space Grotesk';margin:0 0 10px;letter-spacing:-.3px}
+.coach-block p{font-size:13px;line-height:1.6;margin:0 0 8px}
+.coach-block p:last-child{margin-bottom:0}
+.coach-block-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.coach-block-head h3{margin:0}
+.coach-link{border:0;background:none;color:var(--lime-dark);font:700 11px 'DM Sans';cursor:pointer;padding:0}
+.coach-risks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.coach-risks li{border-left:3px solid var(--line);padding:8px 12px;background:var(--bg);border-radius:0 6px 6px 0;font-size:12px;line-height:1.5}
+.coach-risks li strong{display:block;font-size:12px}
+.coach-risks li span{display:block;color:var(--muted);margin-top:2px}
+.coach-risks li em{display:block;font-style:normal;margin-top:4px;font-size:11px}
+.coach-risks li.risk-warning{border-left-color:#e3b341}
+.coach-risks li.risk-danger{border-left-color:#d35858}
+.coach-risks li.risk-info{border-left-color:var(--lime-dark)}
+.coach-verdict{display:inline-block;font:700 12px 'DM Sans';padding:5px 11px;border-radius:20px;background:var(--bg);color:var(--ink);margin:0 0 8px}
+.coach-verdict.verdict-alleggerisci{background:#fdf0d2;color:#7a5410}
+.coach-verdict.verdict-intensifica{background:#e8f6d6;color:#3f5a12}
+.coach-verdict.verdict-annulla{background:#fbe0e0;color:#8a2020}
+body.dark .coach-verdict.verdict-alleggerisci{background:#3a2f16;color:#f0c56a}
+body.dark .coach-verdict.verdict-intensifica{background:#26361a;color:#c7f25a}
+body.dark .coach-verdict.verdict-annulla{background:#3d1f1f;color:#f09a9a}
+.coach-today-title{background:var(--bg);border-radius:6px;padding:10px 12px;font-size:12px}
+.coach-workouts{display:flex;flex-direction:column;gap:8px}
+.coach-workout{display:grid;grid-template-columns:130px 1fr;gap:12px;border:1px solid var(--line);border-radius:7px;padding:13px;background:var(--bg)}
+.coach-workout.is-today{border-color:var(--lime-dark);background:var(--surface)}
+.coach-workout-pick{display:flex;align-items:flex-start;gap:8px;cursor:pointer}
+.coach-workout-pick input{margin:2px 0 0;accent-color:var(--lime-dark)}
+.coach-workout-date{font:600 11px 'Space Grotesk';text-transform:capitalize}
+.coach-workout-head{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.coach-workout-head strong{font-size:13px}
+.coach-badge{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:3px 7px;border-radius:20px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.coach-badge.action-update{border-color:var(--lime-dark);color:var(--lime-dark)}
+.coach-badge.action-create{background:var(--lime);border-color:var(--lime);color:#33420f}
+.coach-badge.action-delete{background:#fbe0e0;border-color:#fbe0e0;color:#8a2020}
+.coach-workout-purpose{font-size:11px;color:var(--muted);margin:5px 0 8px}
+.coach-workout-detail{margin:0;font-size:12px;line-height:1.5}
+.coach-workout-detail dt{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:6px}
+.coach-workout-detail dd{margin:1px 0 0}
+.coach-suggestions{margin:0;padding-left:18px;font-size:13px;line-height:1.6}
+.coach-suggestions li{margin-bottom:5px}
+.coach-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.coach-actions .primary{box-shadow:none}
+.coach-actions button:disabled{opacity:.5;cursor:default}
+.coach-applied{font-size:11px;color:var(--lime-dark);margin:10px 0 0;font-weight:700}
+.coach-history{margin-top:12px}
+.coach-history-list{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto}
+.coach-history-row{display:grid;grid-template-columns:96px 1fr;gap:10px;border:1px solid var(--line);border-radius:7px;padding:11px 13px;background:var(--bg)}
+.coach-history-date{font:600 11px 'Space Grotesk';text-transform:capitalize;color:var(--muted)}
+.coach-history-text{font-size:12px;line-height:1.5}
+.coach-history-meta{grid-column:2;display:flex;flex-wrap:wrap;gap:6px}
+/* Sedute strutturate create dal Coach AI nella lista allenamenti futuri */
+.planned-workout-row.is-structured{border-left:3px solid var(--lime-dark)}
+.planned-workout-title{display:block;font:600 11px 'DM Sans';color:var(--lime-dark);margin-top:2px;text-transform:none;letter-spacing:0}
+.planned-workout-source{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--lime-dark);background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:3px 8px;white-space:nowrap;align-self:center}
+@media(max-width:700px){.coach-workout{grid-template-columns:1fr;gap:6px}.coach-checkin-actions button{flex:1}.coach-readiness{gap:12px;padding:15px}.coach-score{width:66px;height:66px}.coach-history-row{grid-template-columns:1fr;gap:4px}.coach-history-meta{grid-column:1}}
+
+/* Elenchi puntati dell agente: sostituiscono il testo piatto */
+.coach-bullets{margin:0;padding-left:18px;font-size:13px;line-height:1.6}
+.coach-bullets li{margin-bottom:6px;padding-left:2px}
+.coach-bullets li:last-child{margin-bottom:0}
+.coach-bullets li::marker{color:var(--lime-dark);font-weight:700}
