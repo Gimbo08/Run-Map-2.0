@@ -120,6 +120,23 @@ Salvare **sempre** i file in **UTF-8 senza BOM**. Salvataggi ripetuti con l'enco
 sbagliato hanno gia' corrotto gli accenti italiani in passato (es. `può` -> `puÃ...`,
 `‹` -> `âŸ¨`). Verifica sempre dopo aver scritto un file.
 
+### Incidente 27/10/2026 (risolto)
+
+Una riparazione automatica della stringa corrotta `"non puÃ...Â² essere annullata"` in
+`app.js` ha **divorato parte del codice adiacente** e il deploy successivo ha rotto il
+login per tutti (`SyntaxError: missing ) after argument list` in `app.js?v=intervals-1`).
+
+Lezioni:
+
+- **Non deployare senza verifica visiva del login** dopo modifiche a `app.js`/`index.html`:
+  il QA headless non esegue il login reale e non colpisce le rotture di sintassi se il
+  modulo non viene eseguito (o se il controllo e' solo su `node --check` di moduli ali).
+- `node --check` **non basta**: verifica che il modulo **venga caricato** dal browser
+  (es. `--eval` su una variabile esportata o un'azione visibile).
+- Correggere stringhe corrotte a mano, un replace per volta, controllando il contesto
+  che circonda il replace PRIMA e DOPO.
+- Ripristino di riferimento usato: `backup-PRE-COACH-V2-*.zip` (app.js integro).
+
 ## README non aggiornato
 
 `README.md` parla ancora di **Strava** per l'importazione: e' superato, vedi la sezione
