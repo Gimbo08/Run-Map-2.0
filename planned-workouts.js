@@ -1,21 +1,283 @@
-import{getApps,getApp,initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';import{getAuth,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';import{getFirestore,collection,getDocs,setDoc,deleteDoc,doc}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';import{firebaseConfig}from'./firebase-config.js';
-const app=getApps().length?getApp():initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);let workouts=[];
-const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-function modal(){if($('plannedWorkoutModal'))return;const el=document.createElement('div');el.className='modal-backdrop';el.id='plannedWorkoutModal';el.innerHTML='<div class="modal planned-workout-modal"><button class="close-modal" type="button">x</button><p class="eyebrow" id="plannedWorkoutEyebrow">ALLENAMENTO FUTURO</p><h2 id="plannedWorkoutTitle">Aggiungi allenamento</h2><form id="plannedWorkoutForm"><input id="plannedWorkoutId" type="hidden"><label>Giorno<input id="plannedWorkoutDay" placeholder="es. LUNEDI 31" required></label><label>Allenamento<textarea id="plannedWorkoutText" rows="5" placeholder="Descrizione allenamento o riposo" required></textarea></label><button class="primary full" type="submit">Salva allenamento</button></form></div>';document.body.append(el);el.querySelector('.close-modal').onclick=()=>el.classList.remove('open');el.onclick=e=>{if(e.target===el)el.classList.remove('open')};$('plannedWorkoutForm').onsubmit=saveManual}
-function openManual(item={}){modal();const form=$('plannedWorkoutForm');form.innerHTML='<input id="plannedWorkoutId" type="hidden"><label>Giorno<input id="plannedWorkoutDay" placeholder="es. LUNEDI 31" required></label><label>Allenamento<textarea id="plannedWorkoutText" rows="5" placeholder="Descrizione allenamento o riposo" required></textarea></label><button class="primary full" type="submit">Salva allenamento</button>';$('plannedWorkoutEyebrow').textContent='ALLENAMENTO FUTURO';$('plannedWorkoutTitle').textContent=item.id?'Modifica allenamento':'Aggiungi allenamento';$('plannedWorkoutId').value=item.id||`future-workout-${Date.now()}`;$('plannedWorkoutDay').value=item.day||'';$('plannedWorkoutText').value=item.text||'';form.onsubmit=saveManual;$('plannedWorkoutModal').classList.add('open')}
-async function saveManual(event){event.preventDefault();const id=$('plannedWorkoutId').value,existing=workouts.find(item=>item.id===id),sortOrder=existing?.sortOrder??Math.max(0,...workouts.map(item=>Number(item.sortOrder)||0))+1;await setDoc(doc(db,'users',auth.currentUser.uid,'futureWorkouts',id),{id,day:$('plannedWorkoutDay').value.trim(),text:$('plannedWorkoutText').value.trim(),sortOrder,updatedAt:Date.now()});$('plannedWorkoutModal').classList.remove('open');await load()}
-async function load(){if(!auth.currentUser)return;const snap=await getDocs(collection(db,'users',auth.currentUser.uid,'futureWorkouts'));workouts=snap.docs.map(item=>item.data()).sort((a,b)=>{const orderA=Number.isFinite(Number(a.sortOrder))?Number(a.sortOrder):Number(a.importedAt)||Number(a.updatedAt)||0,orderB=Number.isFinite(Number(b.sortOrder))?Number(b.sortOrder):Number(b.importedAt)||Number(b.updatedAt)||0;return orderA-orderB});render()}
-function render(){const list=$('plannedWorkoutList');if(!list)return;list.innerHTML=workouts.length?workouts.map(item=>{const structured=!!item.type;const dayLabel=item.date?formatPlannedDate(item.date):item.day;return `<article class="planned-workout-row${structured?' is-structured':''}" data-id="${escapeHtml(item.id)}"><div class="planned-workout-day">${escapeHtml(dayLabel)}${structured&&item.title?`<span class="planned-workout-title">${escapeHtml(item.title)}</span>`:''}</div><div class="planned-workout-text">${escapeHtml(item.text)}</div>${structured?'<span class="planned-workout-source">Coach AI</span>':''}<button class="delete-btn" type="button" data-delete="${escapeHtml(item.id)}" aria-label="Elimina allenamento" title="Elimina allenamento"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5h14M9.5 7.5V5h5v2.5M8 10.5v7m4-7v7m4-7v7M6.5 7.5l.8 11h9.4l.8-11"/></svg></button></article>`}).join(''):'<p class="intro">Non hai ancora allenamenti futuri in programma.</p>';list.querySelectorAll('.planned-workout-row').forEach(row=>row.onclick=e=>{if(!e.target.closest('[data-delete]'))openManual(workouts.find(item=>item.id===row.dataset.id))});list.querySelectorAll('[data-delete]').forEach(button=>button.onclick=async event=>{event.stopPropagation();if(!confirm('Eliminare questo allenamento?'))return;await deleteDoc(doc(db,'users',auth.currentUser.uid,'futureWorkouts',button.dataset.delete));await load()})}
+// ============================================================================
+// ALLENAMENTI FUTURI — lista del piano, scritta dal Coach AI + righe manuali.
+// Riscritta da zero per robustezza: niente listener che muoiono, niente
+// ternari annidati, binding a prova di re-render.
+// ============================================================================
 
-// Le sedute create dal coach hanno una data ISO: mostro un'etichetta leggibile
-// invece della data grezza, mantenendo il testo manuale invariato.
-function formatPlannedDate(date){const value=new Date(`${date}T12:00:00`);if(Number.isNaN(value.getTime()))return date;return new Intl.DateTimeFormat('it-IT',{weekday:'short',day:'2-digit',month:'short'}).format(value).replace('.','')}
+import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { firebaseConfig } from './firebase-config.js';
 
-function parseDocx(file){if(!window.mammoth)throw new Error('Lettore DOCX non disponibile');return file.arrayBuffer().then(arrayBuffer=>window.mammoth.convertToHtml({arrayBuffer})).then(result=>{const root=document.createElement('div');root.innerHTML=result.value;const rows=[...root.querySelectorAll('tr')];const parsed=[];rows.forEach(row=>{const cells=[...row.querySelectorAll('td')].map(cell=>cell.innerText.replace(/\s+/g,' ').trim()).filter(Boolean);if(cells.length<2)return;const day=cells[0],text=cells.slice(1).join(' ').trim();if(/^(lunedi|lunedì|martedi|martedì|mercoledi|mercoledì|giovedi|giovedì|venerdi|venerdì|sabato|domenica)\b/i.test(day)&&text)parsed.push({id:`future-workout-${Date.now()}-${parsed.length}`,day,text,sortOrder:parsed.length})});if(!parsed.length)throw new Error('Nessuna riga di allenamento riconosciuta nel DOCX');return parsed})}
-function preview(items){modal();$('plannedWorkoutEyebrow').textContent='ANTEPRIMA IMPORTAZIONE';$('plannedWorkoutTitle').textContent=`${items.length} allenamenti trovati`;$('plannedWorkoutForm').innerHTML=`<div class="planned-import-preview">${items.map(item=>`<div><strong>${escapeHtml(item.day)}</strong><span>${escapeHtml(item.text)}</span></div>`).join('')}</div><button class="primary full" type="submit">Importa ${items.length} allenamenti</button>`;$('plannedWorkoutModal').classList.add('open');$('plannedWorkoutForm').onsubmit=async event=>{event.preventDefault();const button=event.target.querySelector('button');button.disabled=true;button.textContent='Importazione...';const importStart=Math.max(0,...workouts.map(item=>Number(item.sortOrder)||0))+1;await Promise.all(items.map((item,index)=>setDoc(doc(db,'users',auth.currentUser.uid,'futureWorkouts',item.id),{...item,sortOrder:importStart+index,importedAt:Date.now()})));$('plannedWorkoutModal').classList.remove('open');await load()}}
-function init(){modal();$('addPlannedWorkout').onclick=()=>openManual();$('deleteAllPlannedWorkouts').onclick=async()=>{if(!workouts.length||!confirm(`Eliminare tutti i ${workouts.length} allenamenti futuri?`))return;await Promise.all(workouts.map(item=>deleteDoc(doc(db,'users',auth.currentUser.uid,'futureWorkouts',item.id))));await load()};$('importPlannedDoc').onclick=()=>$('plannedDocInput').click();$('plannedDocInput').onchange=async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;if(!file.name.toLowerCase().endsWith('.docx')){alert('Seleziona un file DOCX.');return}try{preview(await parseDocx(file))}catch(error){alert(error.message||'Impossibile leggere il documento DOCX.')}};load()}
-onAuthStateChanged(auth,user=>{if(user)init()});
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Il coach scrive il piano in background: quando l'atleta approva, la lista
-// si aggiorna senza ricaricare la pagina.
-window.addEventListener('runmap:plan-updated',()=>{if(auth.currentUser)load()});
+const $ = (id) => document.getElementById(id);
+
+let workouts = [];
+let showRest = false;
+let started = false;
+
+// ---------------------------------------------------------------------------
+// Utility
+// ---------------------------------------------------------------------------
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function todayISO() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+}
+
+function prettyDate(iso) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(iso || ''))) return String(iso || '');
+  const d = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return String(iso);
+  return new Intl.DateTimeFormat('it-IT', { weekday: 'short', day: '2-digit', month: 'short' }).format(d).replace('.', '');
+}
+
+function isCoach(item) {
+  return item.source === 'coach' || !!item.type;
+}
+
+function isRest(item) {
+  return item.type === 'rest' || /^riposo$/i.test(String(item.text || '').trim());
+}
+
+// ---------------------------------------------------------------------------
+// Caricamento
+// ---------------------------------------------------------------------------
+async function loadWorkouts() {
+  const uid = auth.currentUser?.uid;
+  if (!uid) return;
+  try {
+    const snap = await getDocs(collection(db, 'users', uid, 'futureWorkouts'));
+    workouts = snap.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => {
+        const da = String(a.date || '9999');
+        const dbb = String(b.date || '9999');
+        if (da !== dbb) return da.localeCompare(dbb);
+        return (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0);
+      });
+    render();
+  } catch (error) {
+    console.error('Caricamento allenamenti futuri fallito', error);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+function workoutCard(item) {
+  const coach = isCoach(item);
+  const dayLabel = item.date ? prettyDate(item.date) : esc(item.day || '');
+
+  // --- Struttura canonica dell'allenamento ---
+  // KM TOTALI in evidenza + fasi (riscaldamento/centrale/defaticamento) con
+  // andatura esplicita riga per riga + descrizione/obiettivo.
+  const phases = [];
+  if (coach) {
+    // Il modello descrive in chat: warmup/main/cooldown vengono mostrati COME
+    // SONO, senza re-parsing né somme dal testo. Il totale ufficiale è
+    // distanceKm dichiarato — era la fonte dei doppioni e dei totali sforati.
+    if (item.warmup) phases.push({ label: 'Riscaldamento', text: item.warmup });
+    if (item.main) phases.push({ label: 'La seduta', text: item.main });
+    if (item.cooldown) phases.push({ label: 'Defaticamento', text: item.cooldown });
+  }
+  const phaseRows = phases
+    .map((p) => `<tr><td class="pw-phase-label">${esc(p.label)}</td><td class="pw-phase-text ${p.label === 'La seduta' ? 'pw-narrative' : ''}">${esc(p.text)}</td></tr>`)
+    .join('');
+  const table = phaseRows
+    ? `<table class="pw-phases"><tbody>${phaseRows}</tbody></table>`
+    : `<div class="pw-text">${esc(item.text || '')}</div>`;
+
+  // Obiettivo/descrizione della seduta: SOLO se il coach l'ha scritta davvero
+  // (niente frasi segnaposto).
+  const purpose = coach && item.purpose
+    ? `<p class="pw-purpose"><b>Obiettivo:</b> ${esc(item.purpose)}${item.notes ? ` · <b>Note:</b> ${esc(item.notes)}` : ''}</p>`
+    : '';
+
+  const meta = [];
+  if (coach && item.targetPace) meta.push(`${esc(item.targetPace)}/km`);
+  if (coach && item.targetHr) meta.push(`FC ${esc(item.targetHr)}`);
+  const metaHtml = meta.length ? `<span class="pw-meta">${meta.join(' · ')}</span>` : '';
+
+  // KM TOTALI: quello dichiarato dal coach (distanceKm). Nessuna somma dal
+  // testo: descrizioni narrative contengono numeri che non vanno ri-sommati.
+  const total = coach && item.distanceKm
+    ? `<span class="pw-total">${esc(item.distanceKm)} km</span>`
+    : '';
+
+  const title = coach && item.title
+    ? `<span class="pw-title">${esc(item.title)}</span>`
+    : '';
+
+  return `
+    <article class="pw-card ${coach ? 'pw-coach' : ''}" data-id="${esc(item.id)}">
+      <div class="pw-day">
+        <span class="pw-date">${esc(dayLabel)}</span>
+        ${title}
+        ${metaHtml}
+      </div>
+      <div class="pw-body">
+        ${total ? `<div class="pw-total-row">${total}<span class="pw-total-label">km totali (fasi incluse)</span></div>` : ''}
+        ${table}
+        ${purpose}
+      </div>
+      ${coach ? '<span class="pw-source">Coach AI</span>' : ''}
+      <button class="pw-delete" type="button" data-del="${esc(item.id)}" aria-label="Elimina">✕</button>
+    </article>`;
+}
+
+function render() {
+  const list = $('plannedWorkoutList');
+  if (!list) return;
+
+  // ARCHIVIAZIONE VISIVA: le sedute con data < oggi escono dalla vista
+  // (sono gia in "Allenamenti effettuati" via import). Restano a DB per il coach.
+  const today = todayISO();
+  const futureItems = workouts.filter((item) => !item.date || String(item.date) >= today);
+  const pastCount = workouts.length - futureItems.length;
+
+  if (!workouts.length) {
+    list.innerHTML = '<p class="intro">Non hai ancora allenamenti futuri in programma. Creane uno dal Coach AI oppure aggiungilo a mano.</p>';
+    return;
+  }
+
+  const rows = [];
+  let restCount = 0;
+
+  futureItems.forEach((item) => {
+    if (isRest(item) && !showRest) { restCount += 1; return; }
+    rows.push(workoutCard(item));
+  });
+
+  if (restCount) {
+    rows.push(`<button class="pw-rest-toggle" id="pwRestToggle" type="button">${showRest ? 'Nascondi' : 'Mostra'} i ${restCount} riposi</button>`);
+  }
+  if (pastCount) {
+    rows.push(`<p class="pw-archive-note">${pastCount} sedute gia trascorse sono in "Allenamenti effettuati".</p>`);
+  }
+
+  list.innerHTML = rows.join('');
+}
+
+// ---------------------------------------------------------------------------
+// Azioni
+// ---------------------------------------------------------------------------
+function openEditor(item = null) {
+  const modal = $('plannedWorkoutModal');
+  if (!modal) return;
+  $('plannedWorkoutId').value = item?.id || `manual-${Date.now()}`;
+  $('plannedWorkoutDay').value = item?.day || item?.date || '';
+  $('plannedWorkoutText').value = item?.text || '';
+  $('plannedWorkoutTitle').textContent = item ? 'Modifica allenamento' : 'Aggiungi allenamento';
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  $('plannedWorkoutModal')?.classList.remove('open');
+}
+
+async function saveFromModal(event) {
+  event.preventDefault();
+  const uid = auth.currentUser?.uid;
+  if (!uid) return;
+  const id = $('plannedWorkoutId').value;
+  const text = $('plannedWorkoutText').value.trim();
+  if (!text) return;
+  try {
+    await setDoc(doc(db, 'users', uid, 'futureWorkouts', id), {
+      id,
+      day: $('plannedWorkoutDay').value.trim(),
+      text,
+      updatedAt: Date.now()
+    });
+    closeModal();
+    await loadWorkouts();
+  } catch (error) {
+    console.error('Salvataggio fallito', error);
+    alert('Impossibile salvare. Riprova.');
+  }
+}
+
+async function deleteWorkout(id) {
+  const uid = auth.currentUser?.uid;
+  if (!uid) return;
+  if (!confirm('Eliminare questo allenamento?')) return;
+  try {
+    await deleteDoc(doc(db, 'users', uid, 'futureWorkouts', id));
+    await loadWorkouts();
+  } catch (error) {
+    console.error('Eliminazione fallita', error);
+  }
+}
+
+async function deleteAll() {
+  if (!workouts.length) return;
+  if (!confirm(`Eliminare tutti i ${workouts.length} allenamenti futuri?`)) return;
+  const uid = auth.currentUser?.uid;
+  if (!uid) return;
+  try {
+    await Promise.all(workouts.map((item) => deleteDoc(doc(db, 'users', uid, 'futureWorkouts', item.id))));
+    await loadWorkouts();
+  } catch (error) {
+    console.error('Eliminazione massiva fallita', error);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Eventi (delegati: sopravvivono ai re-render)
+// ---------------------------------------------------------------------------
+function bindEvents() {
+  $('addPlannedWorkout')?.addEventListener('click', () => openEditor());
+
+  $('deleteAllPlannedWorkouts')?.addEventListener('click', deleteAll);
+
+  $('plannedWorkoutList')?.addEventListener('click', (event) => {
+    const del = event.target.closest('[data-del]');
+    if (del) {
+      deleteWorkout(del.dataset.del);
+      return;
+    }
+    const toggle = event.target.closest('#pwRestToggle');
+    if (toggle) {
+      showRest = !showRest;
+      render();
+      return;
+    }
+    const card = event.target.closest('.pw-card');
+    if (card && !card.classList.contains('pw-coach')) {
+      const item = workouts.find((w) => w.id === card.dataset.id);
+      if (item) openEditor(item);
+    }
+  });
+
+  $('plannedWorkoutModal')?.addEventListener('click', (event) => {
+    if (event.target.classList.contains('modal-backdrop')) closeModal();
+    if (event.target.closest('.close-modal')) closeModal();
+  });
+
+  $('plannedWorkoutForm')?.addEventListener('submit', saveFromModal);
+}
+
+// ---------------------------------------------------------------------------
+// Avvio
+// ---------------------------------------------------------------------------
+function start() {
+  if (started || !$('plannedWorkoutList')) return;
+  started = true;
+  bindEvents();
+  loadWorkouts();
+  // Espongo il refresh al Coach AI: al posto del solo evento CustomEvent
+  // (fragile all'ordine dei moduli), una chiamata diretta e affidabile.
+  window.runmapReloadPlan = loadWorkouts;
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) start();
+});

@@ -541,3 +541,144 @@ body.dark .coach-verdict.verdict-annulla{background:#3d1f1f;color:#f09a9a}
 .coach-bullets li{margin-bottom:6px;padding-left:2px}
 .coach-bullets li:last-child{margin-bottom:0}
 .coach-bullets li::marker{color:var(--lime-dark);font-weight:700}
+
+/* ===== Coach AI — compattezza (v4) ===== */
+/* Riassunto sotto la prontezza */
+.coach-summary-line{margin:6px 0 0;font-size:11.5px;color:var(--muted)}
+.coach-summary-line::before{content:'';display:none}
+
+/* Blocchi richiudibili */
+.coach-fold{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin-bottom:10px;overflow:hidden}
+.coach-fold summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:12px 15px;font:600 12.5px 'Space Grotesk';letter-spacing:-.2px;color:var(--ink)}
+.coach-fold summary::-webkit-details-marker{display:none}
+.coach-fold summary:hover{background:var(--bg)}
+.coach-fold-arrow{width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s ease;flex:0 0 auto;margin-left:10px}
+.coach-fold[open] .coach-fold-arrow{transform:rotate(225deg)}
+.coach-fold-body{padding:2px 15px 14px;border-top:1px solid var(--line)}
+.coach-fold-body ul{margin:10px 0 0}
+.coach-fold-body .coach-risks{margin:10px 0 0}
+
+/* Card allenamento compatta: titolo + sintesi, dettagli su clic */
+.coach-workout-headline{margin:4px 0 0;font-size:11.5px;color:var(--muted);font-weight:600}
+.coach-workout-more{margin-top:8px}
+.coach-workout-more summary{list-style:none;cursor:pointer;font:700 10px 'DM Sans';text-transform:uppercase;letter-spacing:.6px;color:var(--lime-dark);display:inline-flex;align-items:center;gap:5px}
+.coach-workout-more summary::-webkit-details-marker{display:none}
+.coach-workout-more summary::before{content:'+';font-size:12px;line-height:1}
+.coach-workout-more[open] summary::before{content:'−'}
+.coach-workout-more summary:hover{text-decoration:underline}
+.coach-workout-more .coach-workout-detail{margin-top:8px}
+.coach-workout-purpose{display:none}
+
+/* Badge azione più evidente */
+.coach-action-badge.action-update{background:#fdf0d2;border-color:#e3b341;color:#7a5410}
+.coach-action-badge.action-create{background:var(--lime);border-color:var(--lime);color:#33420f}
+.coach-action-badge.action-delete{background:#fbe0e0;border-color:#d35858;color:#8a2020}
+body.dark .coach-action-badge.action-update{background:#3a2f16;color:#f0c56a}
+body.dark .coach-action-badge.action-delete{background:#3d1f1f;color:#f09a9a}
+
+/* Card delete/keep più quiete */
+.coach-workout.action-delete-row{opacity:.75}
+@media(max-width:700px){.coach-fold summary{padding:11px 13px}.coach-fold-body{padding:2px 13px 12px}}
+
+/* L'attributo hidden deve vincere sul display:flex della lista */
+.coach-history-list[hidden]{display:none}
+
+/* Intestazione storico cliccabile: tutta la riga espande/comprime */
+.coach-history-head{cursor:pointer;margin-bottom:0;padding-bottom:12px}
+.coach-history-head:hover h3{color:var(--lime-dark)}
+.coach-history-head:focus-visible{outline:2px solid var(--lime-dark);outline-offset:2px;border-radius:6px}
+/* Coerente con i fold: freccia che ruota quando aperto */
+.coach-history-head .coach-fold-arrow{margin-left:10px}
+.coach-history-head[aria-expanded="true"] .coach-fold-arrow{transform:rotate(225deg)}
+/* Il bordo tra intestazione e lista quando aperta */
+.coach-history-head[aria-expanded="true"]{border-bottom:1px solid var(--line)}
+
+/* Form creazione piano con preferenze */
+.coach-plan-setup{margin-bottom:12px}
+.coach-plan-grid{display:grid;gap:14px}
+.coach-plan-grid fieldset{border:1px solid var(--line);border-radius:7px;padding:10px 12px;margin:0}
+.coach-plan-grid legend{font:700 10px 'DM Sans';text-transform:uppercase;letter-spacing:.6px;color:var(--muted);padding:0 4px}
+.coach-days{display:flex;flex-wrap:wrap;gap:8px}
+.coach-days label{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:5px 9px;border:1px solid var(--line);border-radius:20px;background:var(--bg)}
+.coach-days input{accent-color:var(--lime-dark)}
+.coach-plan-grid label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin:4px 0 5px}
+.coach-plan-grid select{display:block;width:100%;max-width:260px;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:13px 'DM Sans'}
+@media(max-width:700px){.coach-plan-grid select{max-width:100%}}
+
+/* Raggruppamento per settimana del mesociclo */
+.coach-week-group{margin-bottom:14px}
+.coach-week-group:last-child{margin-bottom:0}
+.coach-week-label{font:700 11px 'Space Grotesk';text-transform:uppercase;letter-spacing:.8px;color:var(--lime-dark);margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+
+/* Km evidenziati nelle sedute del coach */
+.planned-workout-km{display:block;font:600 10px 'DM Sans';color:var(--muted);margin-top:2px}
+
+/* Disciplina secondarie e descrizione a blocchi */
+.coach-discipline-hint{display:block;margin-top:8px;font-size:10.5px;color:var(--muted);line-height:1.4}
+.planned-workout-text b{color:var(--ink);font-weight:700}
+.planned-workout-text br{line-height:1.7}
+
+/* Toggle riposi nel piano */
+.planned-rest-toggle{display:block;width:100%;margin-top:8px;padding:9px;border:1px dashed var(--line);border-radius:7px;background:transparent;color:var(--muted);font:600 11px 'DM Sans';cursor:pointer}
+.planned-rest-toggle:hover{color:var(--lime-dark);border-color:var(--lime-dark)}
+
+/* ============================================================
+   ALLENAMENTI FUTURI — layout v2 (cards semplici e leggibili)
+   ============================================================ */
+.pw-list{display:flex;flex-direction:column;gap:8px}
+.pw-card{display:grid;grid-template-columns:minmax(96px,140px) 1fr auto 34px;gap:12px;align-items:start;border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--bg)}
+.pw-card.pw-coach{border-left:3px solid var(--lime-dark)}
+.pw-day{display:flex;flex-direction:column;gap:3px}
+.pw-date{font:600 11.5px 'Space Grotesk';text-transform:capitalize}
+.pw-title{font:600 10.5px 'DM Sans';color:var(--lime-dark)}
+.pw-meta{font:500 10.5px 'DM Sans';color:var(--muted)}
+.pw-text{font-size:12px;line-height:1.65;color:var(--ink)}
+.pw-text b{color:var(--ink)}
+.pw-source{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--lime-dark);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:3px 8px;white-space:nowrap}
+.pw-delete{width:30px;height:30px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;line-height:1}
+.pw-delete:hover{color:#8a2020;border-color:#d35858}
+.pw-rest-toggle{width:100%;padding:10px;border:1px dashed var(--line);border-radius:8px;background:transparent;color:var(--muted);font:600 11.5px 'DM Sans';cursor:pointer}
+.pw-rest-toggle:hover{color:var(--lime-dark);border-color:var(--lime-dark)}
+@media(max-width:700px){.pw-card{grid-template-columns:1fr;gap:6px}.pw-delete{justify-self:end;grid-row:1}}
+
+/* Struttura allenamento: km totali + fasi con andature */
+.pw-body{display:flex;flex-direction:column;gap:8px}
+.pw-total-row{display:flex;align-items:baseline;gap:8px}
+.pw-total{font:700 15px 'Space Grotesk';color:var(--ink)}
+.pw-total-label{font:600 10px 'DM Sans';text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
+.pw-phases{width:100%;border-collapse:collapse;font-size:12px}
+.pw-phases td{padding:4px 0;vertical-align:top;line-height:1.5}
+.pw-phase-label{width:110px;font:700 10px 'DM Sans';text-transform:uppercase;letter-spacing:.5px;color:var(--muted);white-space:nowrap;padding-right:10px!important}
+.pw-phase-text{color:var(--ink)}
+.pw-purpose{margin:0;font-size:11.5px;color:var(--muted);line-height:1.5}
+.pw-purpose b{color:var(--ink)}
+
+/* Nota archiviazione sedute trascorse */
+.pw-archive-note{width:100%;margin:4px 0 0;font-size:11px;color:var(--muted);text-align:center;padding:8px;border-top:1px solid var(--line)}
+
+/* Metriche Intervals nelle attività effettuate */
+.workout-metrics{display:block;margin-top:2px;color:var(--lime-dark);font-weight:600;font-size:11px}
+
+/* Editor attività: riga doppia ritmo/FC */
+.workout-editor-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.workout-editor-row label{margin-bottom:0}
+
+/* Descrizione parlante della seduta */
+.pw-narrative{line-height:1.75;white-space:pre-line}
+
+/* ===== Chat con il Coach ===== */
+.coach-chat{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:16px;margin-bottom:12px}
+.coach-chat-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.coach-chat-head h3{font:600 15px 'Space Grotesk';margin:0;letter-spacing:-.3px}
+.coach-chat-head small{font-size:10.5px;color:var(--muted)}
+.coach-chat-log{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;margin-bottom:10px}
+.coach-chat-bubble{max-width:85%;padding:9px 12px;border-radius:10px;font-size:12.5px;line-height:1.55}
+.coach-chat-bubble.is-user{align-self:flex-end;background:var(--lime);color:#33420f;border-bottom-right-radius:3px}
+.coach-chat-bubble.is-coach{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:3px}
+.coach-chat-bubble.is-thinking{color:var(--muted);font-style:italic}
+.coach-chat-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.coach-chat-actions .secondary{padding:6px 12px;font-size:11px;box-shadow:none}
+.coach-chat-form{display:flex;gap:8px}
+.coach-chat-form input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:13px 'DM Sans'}
+.coach-chat-form input:focus{outline:none;border-color:var(--lime-dark)}
+.coach-chat-form button:disabled{opacity:.6}

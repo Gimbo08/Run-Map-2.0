@@ -11,7 +11,8 @@ tutti i dati dell'app e propone modifiche **strutturate** al piano. Le proposte 
 
 | Funzione | Ruolo |
 |---|---|
-| `coachCheckin` | Check-in + analisi + proposta (POST, token Bearer) |
+| `coachChat` | Conversazione libera con il coach (Fase 1: proposta, mai scrittura diretta) |
+| `coachCheckin` | Check-in + analisi + proposta (POST, token Bearer); con `chat:true` risponde anche in stile chat |
 | `coachRefreshPlan` | Rigenera piano senza check-in (dopo un import) |
 | `coachApplyProposal` | Applica SOLO le date selezionate dall'atleta |
 | `coachDiscardProposal` | Scarta la proposta (resta in memoria con feedback) |
@@ -153,3 +154,17 @@ Usa `signInWithPopup` (Firebase Auth).
 - I pulsanti del menu usano la **delega di eventi** su `document`
   (`ev.target.closest(...)`), **non** `element.onclick`: con `onclick` l'handler si perde
   se il menu viene ricreato.
+
+
+### Fase 2 (28/10/2026) — check-in ibrido + generazione a blocchi settimanali
+
+- **Check-in = anche chat**: l'invio di "come ti senti oggi?" ora passa `chat:true`;
+  il backend genera oltre alla proposta anche una `chatReply` conversazionale che
+  finisce nella log della chat (`chatBubble`). Un solo invio = registrazione memoria + dialogo.
+- **Generazione piano a blocchi settimanali**: il mesociclo (28 giorni, S1→S4)
+  viene generato in **4 blocchi da 7 giorni** (`generateWeeklyBlocks`), uno per
+  settimana; ogni blocco riceve il riepilogo delle settimane già generate per
+  continuità di volume/tipologie. Motivo: risposte lunghe degradavano (schede
+  mute a metà piano, JSON troncato). Costo: 4 richieste Gemini per piano.
+- Vincoli giorni/lungo applicati DUE volte: calendario esplicito nel prompt
+  (`puoi_allenarti` per ogni data) e enforcement nel codice dopo ogni risposta.

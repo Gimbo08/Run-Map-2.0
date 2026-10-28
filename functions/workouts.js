@@ -79,7 +79,28 @@ exports.intervalsImport = onRequest({ cors: true, region: 'europe-west1', timeou
       if (!date) return;
       const km = Number(activity.distance || 0) / 1000;
       const existing = byIntervalsId.get(intervalsId) || byDoc.get(id) || byDateKm.get(`${date}|${km.toFixed(3)}`);
-      batch.set(existing ? existing.ref : admin.firestore().doc(`users/${user.uid}/runActivities/${id}`), { id: existing ? existing.id : id, type, date, km, source: 'intervals', intervalsId, updatedAt: Date.now() }, { merge: true });
+      // Metriche ricche per il coach: FC, ritmo, dislivello, carico, tempo.
+      const metrics = {
+        km,
+        // Tempo totale (secondi) — per il ritmo medio
+        movingTime: Number(activity.moving_time || 0) || null,
+        elapsedTime: Number(activity.elapsed_time || 0) || null,
+        // FC: media, massima (bpm) — l'agente Coach li usa per la readiness
+        avgHr: Number(activity.average_heartrate || 0) || null,
+        maxHr: Number(activity.max_heartrate || 0) || null,
+        // Dislivello (m) — l'accumulo suggerisce il lavoro collinare
+        elevGain: Number(activity.total_elevation_gain || 0) || null,
+        // Carico di training (TSS/TSS per minuti) — la stanchezza lo rende dominante
+        trainingLoad: Number(activity.training_load || 0) || null,
+        // Ritmo medio (min/km) — il Coach lo calcola per il tempo di moving time
+        // Calcolato solo se entrambi presenti
+        // Per il moving time di 3600 (s) e 10000 (m) → 6.00 min/km
+        pace: (Number(activity.moving_time || 0) && km) ? (Number(activity.moving_time) / 60) / km : null,
+        // RPE percepito dall'utente (se l'attività lo suggerisce)
+        perceivedExertion: Number(activity.perceived_exertion || 0) || null,
+      };
+      const data = { id: existing ? existing.id : id, type, date, source: 'intervals', intervalsId, updatedAt: Date.now(), ...metrics };
+      batch.set(existing ? existing.ref : admin.firestore().doc(`users/${user.uid}/runActivities/${id}`), data, { merge: true });
       imported++;
     });
     await batch.commit();
