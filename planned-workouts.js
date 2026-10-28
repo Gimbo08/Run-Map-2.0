@@ -80,16 +80,26 @@ function workoutCard(item) {
   // KM TOTALI in evidenza + fasi (riscaldamento/centrale/defaticamento) con
   // andatura esplicita riga per riga + descrizione/obiettivo.
   const phases = [];
+  // Estraggo km e ritmo DI OGNI FASE dal suo testo (la descrizione contiene
+  // sempre km e ritmo della fase stessa): cosi i numeri stanno sulla riga
+  // giusta, non sparsi nell'intestazione.
+  const kmFrom = (text) => { const m = String(text || '').match(/(\d+[.,]?\d*)\s*km/i); return m ? m[1].replace('.', ',') : null; };
+  const paceFrom = (text) => { const m = String(text || '').match(/(\d{1,2}:\d{2})\s*\/\s*km/i); return m ? m[1] : null; };
+  const hrFrom = (text) => { const m = String(text || '').match(/\b(\d{3})\s*(?:bpm|ppm)?\b/i); return m && Number(m[1]) > 90 ? m[1] : null; };
   if (coach) {
-    // Il modello descrive in chat: warmup/main/cooldown vengono mostrati COME
-    // SONO, senza re-parsing né somme dal testo. Il totale ufficiale è
-    // distanceKm dichiarato — era la fonte dei doppioni e dei totali sforati.
-    if (item.warmup) phases.push({ label: 'Riscaldamento', text: item.warmup });
-    if (item.main) phases.push({ label: 'La seduta', text: item.main });
-    if (item.cooldown) phases.push({ label: 'Defaticamento', text: item.cooldown });
+    // Solo la seduta principale: riscaldamento/defaticamento sono scritti due
+    // volte (dal modello, dentro e fuori il main) e sfalsavano i totali.
+    if (item.main) phases.push({ label: 'La seduta', text: item.main, km: kmFrom(item.main) || (item.distanceKm != null ? Number(item.distanceKm).toLocaleString('it-IT', { maximumFractionDigits: 1 }) : null), pace: paceFrom(item.main) || (item.targetPace || null), hr: hrFrom(item.main) || (item.targetHr || null) });
   }
   const phaseRows = phases
-    .map((p) => `<tr><td class="pw-phase-label">${esc(p.label)}</td><td class="pw-phase-text ${p.label === 'La seduta' ? 'pw-narrative' : ''}">${esc(p.text)}</td></tr>`)
+    .map((p) => {
+      const bits = [];
+      if (p.km) bits.push(`${esc(p.km)} km`);
+      if (p.pace) bits.push(`${esc(p.pace)}/km`);
+      if (p.hr) bits.push(`FC ${esc(p.hr)}`);
+      const metaInline = bits.length ? `<span class="pw-phase-metrics">${bits.join(' · ')}</span>` : '';
+      return `<tr><td class="pw-phase-label">${esc(p.label)}${metaInline}</td><td class="pw-phase-text ${p.label === 'La seduta' ? 'pw-narrative' : ''}">${esc(p.text)}</td></tr>`;
+    })
     .join('');
   const table = phaseRows
     ? `<table class="pw-phases"><tbody>${phaseRows}</tbody></table>`
@@ -101,10 +111,9 @@ function workoutCard(item) {
     ? `<p class="pw-purpose"><b>Obiettivo:</b> ${esc(item.purpose)}${item.notes ? ` · <b>Note:</b> ${esc(item.notes)}` : ''}</p>`
     : '';
 
-  const meta = [];
-  if (coach && item.targetPace) meta.push(`${esc(item.targetPace)}/km`);
-  if (coach && item.targetHr) meta.push(`FC ${esc(item.targetHr)}`);
-  const metaHtml = meta.length ? `<span class="pw-meta">${meta.join(' · ')}</span>` : '';
+  // Niente ritmo/FC nell'intestazione: stanno sulla riga della fase a cui
+  // appartengono (vedi kmFrom/paceFrom sopra). Qui resta solo il totale km.
+  const metaHtml = '';
 
   // KM TOTALI: quello dichiarato dal coach (distanceKm). Nessuna somma dal
   // testo: descrizioni narrative contengono numeri che non vanno ri-sommati.
@@ -124,12 +133,12 @@ function workoutCard(item) {
         ${metaHtml}
       </div>
       <div class="pw-body">
-        ${total ? `<div class="pw-total-row">${total}<span class="pw-total-label">km totali (fasi incluse)</span></div>` : ''}
+        ${total ? `<div class="pw-total-row">${total}<span class="pw-total-label">km totali</span></div>` : ''}
         ${table}
         ${purpose}
       </div>
       ${coach ? '<span class="pw-source">Coach AI</span>' : ''}
-      <button class="pw-delete" type="button" data-del="${esc(item.id)}" aria-label="Elimina">✕</button>
+      <button class="delete-btn" type="button" data-del="${esc(item.id)}" aria-label="Elimina" title="Elimina allenamento"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5h14M9.5 7.5V5h5v2.5M8 10.5v7m4-7v7M6.5 7.5l.8 11h9.4l.8-11"/></svg></button>
     </article>`;
 }
 

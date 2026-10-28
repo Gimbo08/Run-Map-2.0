@@ -625,21 +625,21 @@ body.dark .coach-action-badge.action-delete{background:#3d1f1f;color:#f09a9a}
 /* ============================================================
    ALLENAMENTI FUTURI — layout v2 (cards semplici e leggibili)
    ============================================================ */
-.pw-list{display:flex;flex-direction:column;gap:8px}
-.pw-card{display:grid;grid-template-columns:minmax(96px,140px) 1fr auto 34px;gap:12px;align-items:start;border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--bg)}
-.pw-card.pw-coach{border-left:3px solid var(--lime-dark)}
-.pw-day{display:flex;flex-direction:column;gap:3px}
-.pw-date{font:600 11.5px 'Space Grotesk';text-transform:capitalize}
+.pw-list{display:flex;flex-direction:column;gap:10px}
+/* Stile allineato a "Gare effettuate" (.race-row). Colori SOLO da variabili
+   del tema: funzionano identici in chiaro e scuro. */
+.pw-card{display:grid;grid-template-columns:minmax(96px,140px) 1fr auto 34px;gap:14px;align-items:start;border:1px solid var(--line);border-left:3px solid var(--lime-dark);border-radius:7px;padding:15px 18px;background:var(--surface);cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s}
+.pw-card:hover{border-color:var(--lime-dark);box-shadow:var(--shadow);transform:translateY(-1px)}
+.pw-card.pw-coach{border-left-color:var(--lime-dark)}
+.pw-day{display:flex;flex-direction:column;gap:4px}
+.pw-date{font:600 13px/1.2 'Space Grotesk';letter-spacing:.25px;text-transform:capitalize}
 .pw-title{font:600 10.5px 'DM Sans';color:var(--lime-dark)}
 .pw-meta{font:500 10.5px 'DM Sans';color:var(--muted)}
 .pw-text{font-size:12px;line-height:1.65;color:var(--ink)}
 .pw-text b{color:var(--ink)}
-.pw-source{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--lime-dark);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:3px 8px;white-space:nowrap}
-.pw-delete{width:30px;height:30px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;line-height:1}
-.pw-delete:hover{color:#8a2020;border-color:#d35858}
-.pw-rest-toggle{width:100%;padding:10px;border:1px dashed var(--line);border-radius:8px;background:transparent;color:var(--muted);font:600 11.5px 'DM Sans';cursor:pointer}
-.pw-rest-toggle:hover{color:var(--lime-dark);border-color:var(--lime-dark)}
-@media(max-width:700px){.pw-card{grid-template-columns:1fr;gap:6px}.pw-delete{justify-self:end;grid-row:1}}
+.pw-total-row{display:flex;align-items:baseline;gap:8px}
+.pw-total{font:600 15px 'Space Grotesk';color:var(--ink)}
+.pw-total-label{font:400 10px 'DM Sans';text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
 
 /* Struttura allenamento: km totali + fasi con andature */
 .pw-body{display:flex;flex-direction:column;gap:8px}
@@ -656,8 +656,8 @@ body.dark .coach-action-badge.action-delete{background:#3d1f1f;color:#f09a9a}
 /* Nota archiviazione sedute trascorse */
 .pw-archive-note{width:100%;margin:4px 0 0;font-size:11px;color:var(--muted);text-align:center;padding:8px;border-top:1px solid var(--line)}
 
-/* Metriche Intervals nelle attività effettuate */
-.workout-metrics{display:block;margin-top:2px;color:var(--lime-dark);font-weight:600;font-size:11px}
+/* Metriche Intervals nelle attività effettuate: stesso carattere/grigio del testo */
+.workout-metrics{display:block;margin-top:2px;color:inherit;font-weight:400;font-size:inherit}
 
 /* Editor attività: riga doppia ritmo/FC */
 .workout-editor-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -682,3 +682,19 @@ body.dark .coach-action-badge.action-delete{background:#3d1f1f;color:#f09a9a}
 .coach-chat-form input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:13px 'DM Sans'}
 .coach-chat-form input:focus{outline:none;border-color:var(--lime-dark)}
 .coach-chat-form button:disabled{opacity:.6}
+
+/* Metriche inline sulla riga della fase */
+.pw-phase-metrics{display:block;margin-top:2px;font:400 10.5px 'DM Sans';color:var(--lime-dark);letter-spacing:.2px}
+
+/* Elementi secondari del piano (stesso linguaggio di "Gare effettuate") */
+.pw-source{justify-self:end;font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--lime-dark);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:3px 8px;white-space:nowrap}
+.pw-delete{border:0;background:none;color:var(--muted);font-size:16px;cursor:pointer;z-index:2;justify-self:end;border-radius:5px;width:28px;height:28px}
+.pw-delete:hover{color:#d35858;background:#d3585812}
+.pw-delete svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+.pw-rest-toggle{width:100%;padding:11px;border:1px dashed var(--line);border-radius:10px;background:transparent;color:var(--muted);font:600 11.5px 'DM Sans';cursor:pointer;transition:border-color .18s,color .18s}
+.pw-rest-toggle:hover{color:var(--lime-dark);border-color:var(--lime-dark)}
+.pw-total-label{margin-left:2px}
+@media(max-width:700px){.pw-card{grid-template-columns:1fr;gap:6px}.pw-delete{justify-self:end;grid-row:1}}
+
+/* Pulsanti check-in: "Crea nuovo piano" spinto a destra */
+.coach-checkin-actions .coach-plan-toggle-right{margin-left:auto}

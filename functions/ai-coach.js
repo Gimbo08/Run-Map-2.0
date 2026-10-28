@@ -905,21 +905,19 @@ function normalizeProposal(result, ctx) {
     const tot = num(w.distanceKm) || 0;
     const parseKm = (text) => { const m = String(text || '').match(/(\d+[.,]?\d*)\s*km/i); return m ? Number(m[1].replace(',', '.')) : 0; };
     const remaining = Math.max(1, round(tot - parseKm(w.warmup) - parseKm(w.cooldown), 1));
-    const basePace2 = basePace;
-    // Fillers CALCOLATI sui ritmi reali dell'atleta (averagePace dalle attivita'),
-    // con moltiplicatori per tipo: facile = base+10%, lungo = base+5%.
+    // Fillers CALCOLATI sui ritmi reali dell'atleta. MAI stampare "null": se
+    // il ritmo medio non e' noto, il testo resta senza cifra e la seduta e'
+    // marcata needsDetail (il coach la completa al prossimo check-in).
+    const paceText = (mult, fallbackLabel) => paceMult(mult) || fallbackLabel;
     const fillers = {
-      easy: `${remaining} km a ${paceMult(1.1)}`, // facile = 10% piu lento del tuo medio
-      long: `${remaining} km a ${paceMult(1.05)} con ultimi 2 km a ${paceMult(0.98)}`, // lungo = +5%, chiusura leggermente piu veloce
-      interval: `${remaining} km: ${Math.max(4, Math.round(remaining / 1))}x400 m a ${paceMult(0.85)} (rec 90 s camminando)`,
-      tempo: `${remaining} km: 2 km a ${paceMult(1.0)} + ${Math.max(1, remaining - 2).toFixed(1)} km a ${paceMult(0.92)}`,
-      recovery: `${remaining} km molto facili a ${paceMult(1.2)}`,
+      easy: `${remaining} km a ritmo facile${paceText(1.1, '') ? ` (${paceText(1.1, '')})` : ''}`,
+      long: `${remaining} km a ritmo lungo${paceText(1.05, '') ? ` (${paceText(1.05, '')})` : ''}, con ultimi 2 km piu veloci`,
+      interval: `${remaining} km: ripetute di 400 m ${paceText(0.85, 'a ritmo sostenuto')} (rec 90 s camminando)`,
+      tempo: `${remaining} km: 2 km ${paceText(1.0, 'a ritmo controllato')} + ${Math.max(1, remaining - 2).toFixed(1)} km a ritmo sostenuto`,
+      recovery: `${remaining} km molto facili`,
       race: `${remaining} km di gara a ritmo gara`,
-      test: `${remaining} km di progressivo: primi ${Math.max(1, remaining - 1).toFixed(1)} km a ${paceMult(1.05)}, ultimo a ${paceMult(0.9)}`
+      test: `${remaining} km di progressivo, ultimo km a ritmo sostenuto`
     };
-    // Fallback: onesto e minimo. Se il ritmo medio esiste, lo usa (già nei
-    // filler sopra); se non esiste, non finge numeri e marca la seduta per la
-    // riscrittura al prossimo check-in.
     w.main = fillers[w.type] || `${remaining} km a ritmo facile`;
     w.needsDetail = !basePace; // senza ritmo medio noto: il coach completa al prossimo giro
   });
@@ -1384,28 +1382,52 @@ exports.coachChat = onRequest({ cors: true, region: 'europe-west1', timeoutSecon
       error.code = 'NO_API_KEY';
       throw error;
     }
-    const response = await fetch(`${GEMINI_URL(GEMINI_MODEL)}?key=${encodeURIComponent(apiKey)}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: CHAT_SYSTEM }] },
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.5,
-          maxOutputTokens: 4096,
-          responseMimeType: 'application/json',
-          responseSchema: CHAT_RESPONSE_SCHEMA
+    // Retry + fallback modello: stessa protezione degli altri percorsi.
+    const chatCall = async (model) => {
+      const response = await fetch(`${GEMINI_URL(model)}?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: CHAT_SYSTEM }] },
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.5,
+            maxOutputTokens: 4096,
+            responseMimeType: 'application/json',
+            responseSchema: CHAT_RESPONSE_SCHEMA
+          }
+        })
+      });
+      if (response.status === 503 || response.status === 429) {
+        const err = new Error(`Gemini ${response.status}`);
+        err.retryable = true;
+        throw err;
+      }
+      if (!response.ok) {
+        const detail = await response.text().catch(() => '');
+        const error = new Error(`Gemini ${response.status}: ${detail.slice(0, 200)}`);
+        error.code = 'GEMINI_ERROR';
+        throw error;
+      }
+      return response.json();
+    };
+
+    let raw = null;
+    for (const model of [GEMINI_MODEL, GEMINI_FALLBACK_MODEL]) {
+      for (let attempt = 0; attempt < 2 && !raw; attempt += 1) {
+        try {
+          raw = await chatCall(model);
+        } catch (error) {
+          if (!error.retryable) throw error;
+          await new Promise((resolve) => setTimeout(resolve, 1200 * (attempt + 1)));
         }
-      })
-    });
-    if (!response.ok) {
-      const detail = await response.text().catch(() => '');
-      const error = new Error(`Gemini ${response.status}: ${detail.slice(0, 200)}`);
-      error.code = 'GEMINI_ERROR';
-      if (response.status === 503 || response.status === 429) error.retryable = true;
+      }
+    }
+    if (!raw) {
+      const error = new Error('Gemini temporaneamente sovraccarico');
+      error.code = 'GEMINI_BUSY';
       throw error;
     }
-    const raw = await response.json();
     const text = (raw.candidates?.[0]?.content?.parts || []).map((p) => p.text || '').join('');
     let parsed;
     try {
@@ -1428,6 +1450,33 @@ exports.coachChat = onRequest({ cors: true, region: 'europe-west1', timeoutSecon
       { role: 'coach', text: reply, at: Date.now() }
     ].slice(-CHAT_MAX_TURNS_IN_CONTEXT * 2);
 
+    // Se l'agente ha proposto modifiche, CREO LA PROPOSAL a Firestore:
+    // l'approvazione in chat segue lo stesso flusso di coachApplyProposal.
+    let chatProposalId = null;
+    if (proposedChanges.length) {
+      const proposalRef = db.collection(`${base}/coachProposals`).doc();
+      await proposalRef.set({
+        id: proposalRef.id,
+        date: today,
+        readiness: { score: 50, status: 'giallo', summary: 'Modifiche discusse in chat' },
+        analysis: '',
+        risks: [],
+        todayDecision: { verdict: 'conferma', reason: changeSummary || 'Modifiche discusse in chat' },
+        methodology: '',
+        raceTactic: '',
+        suggestions: [],
+        workouts: proposedChanges,
+        chatSummary: changeSummary,
+        checkinText: null,
+        metrics: null,
+        intervalsEnriched: false,
+        status: 'pending',
+        source: 'chat',
+        createdAt: Date.now()
+      });
+      chatProposalId = proposalRef.id;
+    }
+
     const batch = db.batch();
     batch.set(sessionRef, { messages: newMessages, updatedAt: Date.now() }, { merge: true });
     batch.set(usageRef, { count: used + 1, date: today }, { merge: true });
@@ -1437,6 +1486,7 @@ exports.coachChat = onRequest({ cors: true, region: 'europe-west1', timeoutSecon
       reply,
       proposedChanges,
       changeSummary,
+      chatProposalId,
       usage: { used: used + 1, limit: CHAT_MAX_MESSAGES_PER_DAY }
     });
   } catch (error) {

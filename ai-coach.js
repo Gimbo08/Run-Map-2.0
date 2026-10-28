@@ -346,8 +346,11 @@ async function submitCheckin(event) {
   event.preventDefault();
   const field = $('coachCheckinText');
   const text = (field?.value || '').trim();
+
+  // UNICO pulsante "Invia": con testo = check-in+analisi; campo vuoto =
+  // aggiorna piano (l'analisi senza check-in). Un pulsante in meno in pagina.
   if (text.length < 3) {
-    renderStatus('Scrivi almeno qualche parola su come ti senti oggi.', 'warn');
+    await refreshPlan();
     return;
   }
 
@@ -387,7 +390,7 @@ async function submitCheckin(event) {
 }
 
 async function refreshPlan() {
-  const button = $('coachRefresh');
+  const button = $('coachCheckinSubmit'); // il pulsante unificato
   const original = button?.textContent;
   if (button) {
     button.disabled = true;
@@ -556,10 +559,12 @@ function chatBubble(role, text, actions = null) {
   log.scrollTop = log.scrollHeight;
 }
 
-function renderChatProposal(changes, summary) {
+function renderChatProposal(changes, summary, proposalId = null) {
   // Le modifiche proposte in chat diventano una PROPOSTA approvabile:
-  // riuso il flusso esistente (renderProposal + coachApplyProposal).
+  // il backend la ha GIA salvata a Firestore (chatProposalId), quindi
+  // coachApplyProposal la trova e la applica come le altre.
   proposal = {
+    id: proposalId,
     readiness: proposal?.readiness || { score: 50, status: 'giallo', summary: '' },
     analysis: proposal?.analysis || '',
     risks: proposal?.risks || [],
@@ -612,7 +617,7 @@ async function sendChatMessage(event) {
       const summary = data.changeSummary || `${data.proposedChanges.length} modifiche proposte`;
       chatBubble('coach', summary, [{
         label: 'Vedi e approva le modifiche',
-        onClick: () => renderChatProposal(data.proposedChanges, summary)
+        onClick: () => renderChatProposal(data.proposedChanges, summary, data.chatProposalId)
       }]);
     }
   } catch (error) {
@@ -643,11 +648,13 @@ function init() {
     });
   }
 
-  const refresh = $('coachRefresh');
-  if (refresh) refresh.addEventListener('click', refreshPlan);
-
+  // Il pulsante Invia è unico: fa il check-in con testo, aggiorna il piano
+  // senza testo. (coachRefresh era il pulsante separato, ora rimosso.)
   const chatForm = $('coachChatForm');
   if (chatForm) chatForm.addEventListener('submit', sendChatMessage);
+
+  const checkinForm = $('coachCheckinForm');
+  if (checkinForm) checkinForm.addEventListener('submit', submitCheckin);
 
   const historyToggle = $('coachHistoryToggle');
   if (historyToggle) {
