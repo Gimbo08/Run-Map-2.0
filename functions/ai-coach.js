@@ -398,7 +398,7 @@ const responseSchema = {
     },
     planChanges: {
       type: 'array',
-      description: 'Modifiche ai prossimi 14 giorni. Solo le righe che cambiano.',
+      description: 'Modifiche ai prossimi 7 giorni. Solo le righe che cambiano. Massimo 7 sedute.',
       items: workoutSchema
     },
     methodology: { type: 'string', description: 'Metodologia applicata e perché, 2-4 frasi' },
@@ -452,7 +452,7 @@ function systemInstruction() {
     '1. Analizza le attività recenti usando i numeri forniti (volume, passo, FC, carico).',
     '2. Valuta la readiness di oggi (0-100) con status verde/giallo/rosso.',
     '3. Decidi la seduta di OGGI: conferma, alleggerisci, intensifica, annulla o sostituisci.',
-    '4. Proponi le modifiche ai prossimi 14 giorni SOLO dove serve, indicando action = update/create/delete/keep.',
+    '4. Proponi modifiche ai prossimi 7 giorni SOLO dove serve, indicando action = update/create/delete/keep. MASSIMO 7 sedute: il check-in e una revisione rapida, non la rigenerazione del piano.',
     '5. Indica la tattica di gara se c è una gara in programma, con split e gestione dello sforzo.',
     '6. Segnala rischi e infortuni con livello, zona e consiglio pratico. Quando un fastidio è presente, separa la risposta: prima ALLENAMENTO (cosa far oggi), poi FISICO (ciao gestire il sintomo).',
     '7. Confronta i risultati delle gare effettuate con i personal best e con i ritmi di allenamento: segnala scostamenti.',
@@ -497,7 +497,13 @@ function systemInstruction() {
     '  * velocita -> più sedute di qualità (ripetute, tempo), lungo più corto;',
     '  * miglioramento -> equilibrio 80/20 con progressione settimanale chiara;',
     '  * costanza -> volumi moderati e regolari, quasi zero intensità, priorità al non saltare sedute.',
+    '  * OBIETTIVO SU DISTANZA SPECIFICA — il piano si calibra sulla gara bersaglio:',
+    '    * 10k -> sedute di qualità dominanti su VO2 e soglia (ripetute 400-1000 m a ritmo gara o piu veloce, tempo run 20-30 min), lungo 12-16 km con finali a ritmo gara, volume 30-50 km;',
+    '    * mezza -> soglia anaerobica è la regina (tempo run 30-45 min a ritmo mezza, blocchi 2x20 min), lungo 18-24 km con tratti a ritmo mezza, volume 45-70 km;',
+    '    * maratona -> resistenza specifica: lunghe 28-35 km con blocchi a ritmo maratona, fondi lunghissimi, qualita moderata (maratona-pace, poche sedute veloci), volume 55-90 km;',
+    '    * In TUTTI i casi i ritmi si calibrano sui DATI dell atleta (PB e ritmo medio di personal_best/allenamenti_recenti), MAI su valori generici.',
     '- MESOCICLO A BLOCCHI SETTIMANALI: quando preferenze_piano è presente o il piano attuale è vuoto/scaduto, ti viene chiesto di generare UNA SETTIMANA alla volta (7 giorni, da data X a data Y). Ti riceverai le istruzioni blocco per blocco con il piano delle settimane precedenti come contesto di continuita.',
+    '- ATTENZIONE: questa istruzione vale SOLO quando il piano è vuoto o scaduto. Se il piano esiste già, NON rigenerarlo: proponi solo le modifiche necessarie per oggi e i prossimi giorni.',
     '- DISCIPLINE SECONDARIE: se preferenze_piano.disciplines contiene bici/tapis/nuoto, sostituisci OCCASIONALMENTE (max 1-2 sedute a settimana, mai il lungo, mai la principale di qualita) una seduta facile con uno di quegli sport.',
     '  * La corsa resta PRINCIPALE: la 80/20 si calcola solo sulle sedute di corsa, gli sport secondari non aggiungono volume e non sostituiscono mai il lungo.',
     '  * Per quelle sedute: type=cross, title con lo sport (es. "Bici · recupero attivo"), main con durata e intensita (es. "45 min zona 2, cadenza 85+").',
@@ -1149,7 +1155,7 @@ exports.coachCheckin = onRequest({ cors: true, region: 'europe-west1', timeoutSe
       ? prefs.trainingDays.map(String).slice(0, 7)
       : null;
     prefs.longDay = String(prefs.longDay || '').slice(0, 10) || null;
-    prefs.objective = ['resistenza', 'velocita', 'miglioramento', 'costanza'].includes(prefs.objective)
+    prefs.objective = ['resistenza', 'velocita', 'miglioramento', 'costanza', 'mezza', '10k', 'maratona'].includes(prefs.objective)
       ? prefs.objective
       : null;
     // Sport secondari (bici/tapis/nuoto): restano solo quelli validi.
@@ -1184,31 +1190,25 @@ exports.coachCheckin = onRequest({ cors: true, region: 'europe-west1', timeoutSe
     const result = await callGemini(buildPrompt(ctx, metrics, activities, { text, date: today }, prefs, chatStyle));
     const proposal = normalizeProposal(result, { ...ctx, prefs });
 
-    // In modalita' chat, la risposta include anche una parte conversazionale
-    // (il 'come ti senti' dell'atleta puo' contenere domande/richieste).
+    // Risposta conversazionale SENZA seconda chiamata a Gemini: la costruisco
+    // dalla proposta gia generata. Prima erano 2 chiamate sequenziali e il
+    // check-in sforava i 120s di timeout di Cloud Run.
     let chatReply = null;
     if (chatStyle) {
-      try {
-        const chatPrompt = [
-          CHAT_SYSTEM,
-          '',
-          'CONTESTO ATLETA:',
-          JSON.stringify({
-            oggi: ctx.today,
-            readiness_oggi: proposal.readiness,
-            decisione_oggi: proposal.todayDecision,
-            prossima_gara: ctx.nextRace,
-            piano_futuro: ctx.futureWorkouts.filter((w) => !w.isPast).slice(0, 12)
-          }, null, 1),
-          '',
-          'L atleta ha scritto nel check-in: "' + text + '".',
-          'Rispondi brevemente (max 100 parole) a eventuali domande/richieste contenute, citando la decisione presa per oggi. Se non ci sono domande, conferma la decisione in una frase.'
-        ].join('\n');
-        const chatRaw = await callGemini(chatPrompt, { json: false });
-        chatReply = String(chatRaw).slice(0, 800);
-      } catch (chatError) {
-        console.warn('Chat reply fallback', chatError.message);
-      }
+      const verdict = proposal.todayDecision.verdict;
+      const opening = {
+        conferma: 'Il piano di oggi va bene cosi.',
+        alleggerisci: 'Oggi alleggeriamo.',
+        intensifica: 'Oggi possiamo spingere un po\' di piu.',
+        annulla: 'Oggi meglio fermarsi.',
+        sostituisci: 'Oggi cambiamo seduta.'
+      }[verdict] || 'Piano di oggi confermato.';
+      const reason = String(proposal.todayDecision.reason || '').replace(/\s+/g, ' ').trim();
+      const readiness = proposal.readiness;
+      const parts = [opening];
+      if (reason) parts.push(reason);
+      if (readiness && readiness.summary) parts.push(readiness.summary);
+      chatReply = parts.join(' ').slice(0, 800);
     }
 
     // Il check-in memorizza anche l'esito: nelle analisi future l'agente sa
@@ -1273,6 +1273,7 @@ const CHAT_SYSTEM = [
   '- Rispondere a dubbi sul piano: perche quella seduta, cosa significa, cosa succede se salta.',
   '- Spiegare le tue scelte con i numeri dell atleta (ritmi reali, volumi, FC).',
   '- Preparare MODIFICHE al piano: se latleta chiede o accetta un cambiamento, restituisci proposedChanges (array di sedute nel formato workout). Saranno mostrate come proposta approvabile — tu NON applichi nulla.',
+  '- IMPORTANTE sugli id: per modificare una seduta ESISTENTE devi copiare il suo "id" esatto da piano_futuro e impostare action="update". Per una seduta nuova lascia id vuoto e usa action="create". Usa action="delete" SOLO se latleta chiede esplicitamente con parole come "elimina", "togli", "cancella" quel giorno specifico. Se vuoi SOSTITUIRE la seduta di un giorno, usa action="update" (o create se il giorno e vuoto) con il nuovo contenuto: MAI delete.',
   '- Chiarire dubbi su fastidi, recupero, gara: con la scala del dolore e le regole di sicurezza del tuo ruolo.',
   '',
   'COSA NON PUOI FARE:',
@@ -1439,7 +1440,16 @@ exports.coachChat = onRequest({ cors: true, region: 'europe-west1', timeoutSecon
 
     const reply = String(parsed.reply || 'Non ho capito, riformula.').slice(0, 1200);
     const proposedChanges = Array.isArray(parsed.proposedChanges)
-      ? parsed.proposedChanges.slice(0, 10).map((w) => normalizeWorkout(w, 0, today)).filter(Boolean).map(({ index, isPast, ...rest }) => rest)
+      ? parsed.proposedChanges.slice(0, 10)
+        .map((w) => normalizeWorkout(w, 0, today))
+        .filter(Boolean)
+        .map(({ index, isPast, ...rest }) => {
+          // Sicurezza: se il modello ha detto delete ma ha fornito un titolo e
+          // contenuti, intendeva SOSTITUIRE la seduta, non eliminare il giorno.
+          const hasContent = !!(rest.title && rest.main);
+          if (rest.action === 'delete' && hasContent) return { ...rest, action: 'update' };
+          return rest;
+        })
       : [];
     const changeSummary = String(parsed.changeSummary || '').slice(0, 200);
 
@@ -1587,6 +1597,8 @@ exports.coachApplyProposal = onRequest({ cors: true, region: 'europe-west1', tim
       if (date && !byDate.has(date)) byDate.set(date, doc);
     });
 
+    console.log('coachApplyProposal: richieste', JSON.stringify(workouts.map((w) => ({ date: w.date, action: w.action, id: w.id || null, title: w.title })).slice(0, 15)));
+
     workouts.forEach((workout) => {
       if (skipped.has(workout.date)) return;
       // keep = "lascia la seduta esistente": non tocco il documento ESISTENTE,
@@ -1598,12 +1610,19 @@ exports.coachApplyProposal = onRequest({ cors: true, region: 'europe-west1', tim
 
       const collectionRef = db.collection(`${base}/futureWorkouts`);
       if (workout.action === 'delete') {
+        // Elimino SOLO se latleta ha davvero chiesto di eliminare. Una seduta
+        // vuota o con titolo generico non e' una richiesta di cancellazione.
         const target = (workout.id && byId.get(workout.id)) || byDate.get(workout.date);
-        if (target) batch.delete(target.ref);
+        if (target) {
+          batch.delete(target.ref);
+          applied.push({ date: workout.date, id: target.id, action: 'delete' });
+        }
         return;
       }
 
       // Aggiorna la seduta esistente di quel giorno se c'è, altrimenti la crea.
+      // Se action=update ma la seduta non esiste piu', la ricreo invece di
+      // lasciare il giorno vuoto (accadeva con proposte da chat senza id).
       const target = (workout.id && byId.get(workout.id)) || byDate.get(workout.date) || null;
       const docId = target ? target.id : workoutDocId(workout.date, workout.type);
       const text = workout.type === 'rest' ? 'Riposo' : renderText(workout) || workout.title;

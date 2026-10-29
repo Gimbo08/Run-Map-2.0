@@ -155,10 +155,14 @@ function renderProposal() {
   const root = $('coachProposal');
   if (!root) return;
 
+  // Nessuna proposta = sezione vuota e nascosta: il messaggio statico era
+  // solo rumore (l'invito a fare il check-in e gia nell'eyebrow sopra).
   if (!proposal) {
-    root.innerHTML = '<p class="coach-empty">Nessuna proposta attiva. Rispondi al check-in per far analizzare i tuoi allenamenti.</p>';
+    root.innerHTML = '';
+    root.hidden = true;
     return;
   }
+  root.hidden = false;
 
   const readiness = proposal.readiness || { score: 0, status: 'giallo', summary: '' };
   const risks = proposal.risks || [];
@@ -600,7 +604,7 @@ async function sendChatMessage(event) {
     thinking.hidden = false;
     thinkingBubble = document.createElement('div');
     thinkingBubble.className = 'coach-chat-bubble is-coach is-thinking';
-    thinkingBubble.textContent = 'Il coach sta leggendo il piano...';
+    thinkingBubble.textContent = 'Il coach sta pensando...';
     thinking.appendChild(thinkingBubble);
     thinking.scrollTop = thinking.scrollHeight;
   }

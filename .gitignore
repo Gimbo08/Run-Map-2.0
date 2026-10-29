@@ -21,6 +21,51 @@ build-log.txt
 
 # File personali / binari non di progetto
 *.docx
-1.png
-5.jpeg
+*.png
+*.jpg
+*.jpeg
 mobile-theme.png
+
+# Script di diagnostica/QA temporanei (non fanno parte del progetto)
+*.mjs
+check-*.cjs
+brace-*.cjs
+bisect-*.cjs
+deep-*.cjs
+find-*.cjs
+fix-*.cjs
+balance-*.cjs
+strip-*.cjs
+remove-*.cjs
+reorder-*.cjs
+rewrite-*.cjs
+bootstrap-*.cjs
+change-*.cjs
+instrument.cjs
+compare-*.cjs
+join-*.cjs
+tpl-*.cjs
+line-*.cjs
+max-*.cjs
+tail-*.cjs
+inspect-*.cjs
+order-*.cjs
+path-*.cjs
+toggle-*.cjs
+purge-*.cjs
+test-*.cjs
+list-*.cjs
+locate-*.cjs
+map-*.cjs
+dedupe-*.cjs
+verify-*.cjs
+prod-*.cjs
+context-*.cjs
+login-*.txt
+login-result.txt
+qa-*.png
+
+# Dipendenze Node usate solo per test locali
+node_modules/
+package.json
+package-lock.json

@@ -1,62 +1,21 @@
 import{getApps,getApp,initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';import{getAuth,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';import{getFirestore,collection,getDocs,setDoc,deleteDoc,doc}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';import{firebaseConfig}from'./firebase-config.js';
 const app=getApps().length?getApp():initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),el=id=>document.getElementById(id);let user=null,activities=[],shoes=[];
-const types=[['run','Corsa','🏃'],['walk','Camminata','🚶'],['hike','Trekking','🥾']],esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),formatWorkoutDate=value=>{const [year,month,day]=String(value||'').slice(0,10).split('-');return year&&month&&day?`${day}-${month}-${year}`:String(value||'')};
-async function load(){if(!user)return;const[a,s]=await Promise.all([getDocs(collection(db,'users',user.uid,'runActivities')),getDocs(collection(db,'users',user.uid,'shoeShelf'))]);const ordered=a.docs.map(x=>({ref:x.ref,data:x.data()})).sort((x,y)=>String(y.data.date).localeCompare(String(x.data.date))||Number(y.data.updatedAt||0)-Number(x.data.updatedAt||0));activities=ordered.map(item=>item.data);shoes=s.docs.map(x=>x.data());window.runmapActivities=activities;render();window.dispatchEvent(new CustomEvent('runmap:activities-updated',{detail:activities}))}
-function render(){const list=el('workoutList');if(!list)return;const visibleActivities=activities.slice(0,10);list.innerHTML=visibleActivities.length?visibleActivities.map(a=>{const type=types.find(t=>t[0]===a.type)||types[0],shoe=shoes.find(s=>s.id===a.shoeId);
-// Metriche nell'ordine: KM - RITMO - FC. Il ritmo puo' arrivare come
-// min/km decimale (es. 6.16, dal calcolo dell'import) o come "m:ss":
-// in entrambi i casi lo normalizzo in tempo m:ss/km, mai decimali.
-const kmDisplay=Number(a.km||0).toLocaleString('it-IT',{maximumFractionDigits:2});
-const metrics=[];
-let paceText='';
-if(a.pace!=null&&a.pace!==''){
-  if(String(a.pace).includes(':'))paceText=String(a.pace);
-  else{const secPerKm=Math.round(Number(a.pace)*60);const pm=Math.floor(secPerKm/60),ps=secPerKm%60;paceText=`${pm}:${String(ps).padStart(2,'0')}`}
-}else if(a.movingTime&&a.km){const secPerKm=Math.round(a.movingTime/a.km);const m=Math.floor(secPerKm/60),s=secPerKm%60;paceText=`${m}:${String(s).padStart(2,'0')}`}
-if(paceText)metrics.push(`Ritmo ${paceText}/km`);
-if(a.avgHr)metrics.push(`FC ${Math.round(a.avgHr)}`);
+const types=[['run','Corsa','🏃'],['walk','Camminata','🚶'],['hike','Trekking','🥾']],esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),formatWorkoutDate=value=>{const[year,month,day]=String(value||'').slice(0,10).split('-');return year&&month&&day?`${day}-${month}-${year}`:String(value||'')};
+function paceText(value,moving,km){if(value!=null&&value!==''){if(String(value).includes(':'))return String(value);const s=Math.round(Number(value)*60);return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}if(moving&&km){const s=Math.round(moving/km);return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}return''}
+async function load(){if(!user)return;const[a,s]=await Promise.all([getDocs(collection(db,'users',user.uid,'runActivities')),getDocs(collection(db,'users',user.uid,'shoeShelf'))]);activities=a.docs.map(x=>x.data()).sort((x,y)=>String(y.date).localeCompare(String(x.date))||Number(y.updatedAt||0)-Number(x.updatedAt||0));shoes=s.docs.map(x=>x.data());window.runmapActivities=activities;render();window.dispatchEvent(new CustomEvent('runmap:activities-updated',{detail:activities}))}
+function render(){const list=el('workoutList');if(!list)return;const visible=activities.slice(0,10);list.innerHTML=visible.length?visible.map(a=>{const type=types.find(t=>t[0]===a.type)||types[0],shoe=shoes.find(s=>s.id===a.shoeId);
+// Metriche nell'ordine KM - RITMO - FC, ritmo sempre m:ss mai decimale.
+const kmDisplay=Number(a.km||0).toLocaleString('it-IT',{maximumFractionDigits:2});const pace=paceText(a.pace,a.movingTime,a.km);const metrics=[];if(pace)metrics.push(`Ritmo ${pace}/km`);if(a.avgHr)metrics.push(`FC ${Math.round(a.avgHr)}`);
 const metricsHtml=metrics.length?`<br><span class="workout-metrics">${metrics.join(' · ')}</span>`:'';
 return `<article class="workout-entry" data-workout="${esc(a.id)}"><div class="workout-kind"><span class="workout-icon">${type[2]}</span><div><strong>${type[1]}</strong><small>${esc(formatWorkoutDate(a.date))} · ${kmDisplay} km ${a.source==='intervals'?'<b class="strava-badge">Intervals</b>':''}${metricsHtml}</small></div></div><select class="workout-shoe-select" data-shoe-for="${esc(a.id)}"><option value="">Seleziona scarpa</option>${shoes.map(s=>`<option value="${esc(s.id)}" ${s.id===a.shoeId?'selected':''}>${esc([s.brand,s.model].filter(Boolean).join(' ')||'Scarpa')}</option>`).join('')}</select><button class="delete-btn workout-delete" type="button" data-workout-delete="${esc(a.id)}" aria-label="Elimina attività" title="Elimina attività"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5h14M9.5 7.5V5h5v2.5M8 10.5v7m4-7v7m4-7v7M6.5 7.5l.8 11h9.4l.8-11"/></svg></button></article>`}).join('')+(activities.length>10?'<p class="workout-limit">Visualizzati gli ultimi 10 allenamenti.</p>':''):'<p class="workout-empty">Nessuna attività registrata.</p>';list.querySelectorAll('[data-shoe-for]').forEach(s=>s.onchange=()=>saveShoe(s.dataset.shoeFor,s.value));list.querySelectorAll('[data-workout-delete]').forEach(b=>b.onclick=()=>remove(b.dataset.workoutDelete));list.querySelectorAll('.workout-entry').forEach(row=>row.onclick=e=>{if(!e.target.closest('button,select'))editor(activities.find(a=>a.id===row.dataset.workout))})}
 async function saveShoe(id,shoeId){const a=activities.find(x=>x.id===id);if(!a)return;await setDoc(doc(db,'users',user.uid,'runActivities',id),{...a,shoeId});await load()}
 function editor(item={}){const m=document.createElement('div');m.className='workout-editor-backdrop';m.id='workoutEditor';
-// Ritmo: se il valore e' decimale (es. 6.1603) lo converto in m:ss per il campo;
-// il salvataggio mantiene il formato scelto dall'utente (m:ss e' il canonico).
-let paceDisplay='';if(item.pace!=null&&item.pace!==''){if(String(item.pace).includes(':'))paceDisplay=String(item.pace);else{const sec=Math.round(Number(item.pace)*60);paceDisplay=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`}}
-m.innerHTML=`<section class="workout-editor" role="dialog" aria-modal="true"><button class="workout-close" type="button">×</button><h2>${item.id?'Modifica attività':'Nuova attività'}</h2><form><label>Tipo attività<select name="type">${types.map(t=>`<option value="${t[0]}" ${item.type===t[0]?'selected':''}>${t[1]}</option>`).join('')}</select></label><label>Data<input name="date" type="date" required value="${esc(item.date||new Date().toISOString().slice(0,10))}"></label><label>Chilometri<input name="km" type="number" min="0.1" step="0.01" required value="${item.km!=null?Number(item.km).toFixed(2):''}"></label><div class="workout-editor-row"><label>Ritmo (min/km)<input name="pace" placeholder="es. 5:30" value="${esc(paceDisplay)}"></label><label>FC media<input name="avgHr" type="number" min="60" max="230" placeholder="es. 158" value="${item.avgHr?Math.round(item.avgHr):''}"></label></div><label>Scarpa utilizzata<select name="shoeId"><option value="">Nessuna scarpa</option>${shoes.map(s=>`<option value="${esc(s.id)}" ${s.id===item.shoeId?'selected':''}>${esc([s.brand,s.model].filter(Boolean).join(' ')||'Scarpa')}</option>`).join('')}</select></label><button class="primary full" type="submit">${item.id?'Salva modifiche':'Aggiungi attività'}</button></form></section>`;document.body.append(m);m.querySelector('.workout-close').onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove()};m.querySelector('form').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');b.disabled=true;b.textContent='Salvataggio...';const f=new FormData(e.target),id=item.id||`activity-${Date.now()}`;const kmVal=Number(f.get('km'));const paceVal=String(f.get('pace')||'').trim();const hrVal=Number(f.get('avgHr'))||null;await setDoc(doc(db,'users',user.uid,'runActivities',id),{id,type:f.get('type'),date:f.get('date'),km:kmVal,pace:paceVal||null,avgHr:hrVal,movingTime:item.movingTime||null,shoeId:String(f.get('shoeId')||''),source:item.source||'manual',updatedAt:Date.now()},{merge:true});m.remove();await load()}}
+// Ritmo decimale -> m:ss per il campo; il salvataggio mantiene m:ss come canonico.
+let paceDisplay='';if(item.pace!=null&&item.pace!==''){if(String(item.pace).includes(':'))paceDisplay=String(item.pace);else{const s=Math.round(Number(item.pace)*60);paceDisplay=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}}
+m.innerHTML=`<section class="workout-editor" role="dialog" aria-modal="true"><button class="workout-close" type="button">×</button><h2>${item.id?'Modifica attività':'Nuova attività'}</h2><form><label>Tipo attività<select name="type">${types.map(t=>`<option value="${t[0]}" ${item.type===t[0]?'selected':''}>${t[1]}</option>`).join('')}</select></label><label>Data<input name="date" type="date" required value="${esc(item.date||new Date().toISOString().slice(0,10))}"></label><label>Chilometri<input name="km" type="number" min="0.1" step="0.01" required value="${item.km!=null?Number(item.km).toFixed(2):''}"></label><div class="workout-editor-row"><label>Ritmo (min/km)<input name="pace" placeholder="es. 5:30" value="${esc(paceDisplay)}"></label><label>FC media<input name="avgHr" type="number" min="60" max="230" placeholder="es. 158" value="${item.avgHr?Math.round(item.avgHr):''}"></label></div><label>Scarpa utilizzata<select name="shoeId"><option value="">Nessuna scarpa</option>${shoes.map(s=>`<option value="${esc(s.id)}" ${s.id===item.shoeId?'selected':''}>${esc([s.brand,s.model].filter(Boolean).join(' ')||'Scarpa')}</option>`).join('')}</select></label><button class="primary full" type="submit">${item.id?'Salva modifiche':'Aggiungi attività'}</button></form></section>`;document.body.append(m);m.querySelector('.workout-close').onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove()};m.querySelector('form').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');b.disabled=true;b.textContent='Salvataggio...';const f=new FormData(e.target),id=item.id||`activity-${Date.now()}`;const kmVal=Number(f.get('km'));const paceVal=String(f.get('pace')||'').trim();const hrVal=Number(f.get('avgHr'))||null;await setDoc(doc(db,'users',user.uid,'runActivities',id),{id,type:f.get('type'),date:f.get('date'),km:kmVal,pace:paceVal||null,avgHr:hrVal,movingTime:item.movingTime||null,shoeId:String(f.get('shoeId')||''),source:item.source||'manual',updatedAt:Date.now()});m.remove();await load()}}
 async function remove(id){if(!confirm('Eliminare questa attività?'))return;await deleteDoc(doc(db,'users',user.uid,'runActivities',id));await load()}
-async function importIntervals(){
-  if(!user)return;
-  const button=el('importWorkoutButton');
-  if(button.disabled)return;
-  const original=button.innerHTML;
-  button.disabled=true;
-  button.classList.add('is-importing');
-  button.innerHTML='<span class="import-spinner" aria-hidden="true"></span> Importazione...';
-  try{
-    const token=await user.getIdToken();
-    const r=await fetch(`${window.RUNMAP_API_URL||''}/intervalsImport`,{method:'POST',headers:{Authorization:`Bearer ${token}`}});
-    const data=await r.json().catch(()=>({}));
-    if(r.ok){await load();alert(`${data.imported||0} attivita' importate da Intervals.icu`);return}
-    throw Error(data.error||'Importazione Intervals.icu non disponibile');
-  }catch(e){
-    console.error(e);
-    alert(e.message||'Importazione Intervals.icu non disponibile');
-  }finally{
-    button.disabled=false;
-    button.classList.remove('is-importing');
-    button.innerHTML=original;
-  }
-}
-// Sincronizzazione silenziosa: gira all'avvio senza popup e senza toccare il
-// bottone manuale (che resta con il suo alert di conferma per l'uso a mano).
-async function autoImportIntervals(){
-  if(!user)return;
-  try{
-    const token=await user.getIdToken();
-    await fetch(`${window.RUNMAP_API_URL||''}/intervalsImport`,{method:'POST',headers:{Authorization:`Bearer ${token}`}});
-    await load();
-    window.dispatchEvent(new CustomEvent('runmap:activities-updated',{detail:activities}));
-  }catch(e){console.warn('Auto-import Intervals non riuscito',e)}
-}
-function init(){el('addWorkoutButton').onclick=()=>editor();el('importWorkoutButton').onclick=importIntervals;
-  onAuthStateChanged(auth,u=>{user=u;if(u){load();setTimeout(autoImportIntervals,1500)}})}init();
+async function importIntervals(){if(!user)return;const button=el('importWorkoutButton');if(!button||button.disabled)return;const original=button.innerHTML;button.disabled=true;button.classList.add('is-importing');button.innerHTML='<span class="import-spinner" aria-hidden="true"></span> Importazione...';try{const token=await user.getIdToken();const r=await fetch(`${window.RUNMAP_API_URL||''}/intervalsImport`,{method:'POST',headers:{Authorization:`Bearer ${token}`}});const data=await r.json().catch(()=>({}));if(r.ok){await load();alert(`${data.imported||0} attivita' importate da Intervals.icu`);return}throw Error(data.error||'Importazione Intervals.icu non disponibile')}catch(e){console.error(e);alert(e.message||'Importazione Intervals.icu non disponibile')}finally{button.disabled=false;button.classList.remove('is-importing');button.innerHTML=original}}
+// Sincronizzazione silenziosa all'avvio: niente popup, niente alert.
+async function autoImportIntervals(){if(!user)return;try{const token=await user.getIdToken();await fetch(`${window.RUNMAP_API_URL||''}/intervalsImport`,{method:'POST',headers:{Authorization:`Bearer ${token}`}});await load();window.dispatchEvent(new CustomEvent('runmap:activities-updated',{detail:activities}))}catch(e){console.warn('Auto-import Intervals non riuscito',e)}}
+function init(){const addBtn=el('addWorkoutButton');if(addBtn)addBtn.onclick=()=>editor();window.runmapReloadWorkouts=load;
+onAuthStateChanged(auth,u=>{user=u;if(u){load();setTimeout(autoImportIntervals,1500)}})}init();
